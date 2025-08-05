@@ -3,19 +3,10 @@
   "WorkspaceRootPath": "D:\\Github\\80thPhotoBooth\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|d:\\github\\80thphotobooth\\assets\\my\\scripts\\jsonloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\my\\scripts\\jsonloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Github\\DemoMission2\\Assets\\My\\Scripts\\GameCloser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|d:\\github\\80thphotobooth\\assets\\unity-logs-viewer\\reporter\\reporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\unity-logs-viewer\\reporter\\reporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|D:\\Github\\80thPhotoBooth\\assets\\unity-logs-viewer\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\unity-logs-viewer\\gamemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|D:\\Github\\80thPhotoBooth\\assets\\my\\scripts\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|d:\\github\\80thphotobooth\\assets\\my\\scripts\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\my\\scripts\\uimanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -23,8 +14,16 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\StreamingAssets\\Settings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|D:\\Github\\80thPhotoBooth\\assets\\my\\scripts\\uicreator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\my\\scripts\\uicreator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|D:\\Github\\80thPhotoBooth\\assets\\my\\scripts\\jsonloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\my\\scripts\\jsonloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|D:\\Github\\80thPhotoBooth\\assets\\my\\scripts\\jsonclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{269602DF-4CB8-F2B7-C07C-AF8C358C279A}|Assembly-CSharp.csproj|solutionrelative:assets\\my\\scripts\\jsonclass.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\UICreator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\My\\Scripts\\UICreator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -39,14 +38,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Settings.json",
-              "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\StreamingAssets\\Settings.json",
-              "RelativeDocumentMoniker": "Assets\\StreamingAssets\\Settings.json",
-              "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\StreamingAssets\\Settings.json",
-              "RelativeToolTip": "Assets\\StreamingAssets\\Settings.json",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAkwF8AAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-08-04T08:19:21.459Z",
+              "Title": "JsonClass.cs",
+              "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\JsonClass.cs",
+              "RelativeDocumentMoniker": "Assets\\My\\Scripts\\JsonClass.cs",
+              "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\JsonClass.cs",
+              "RelativeToolTip": "Assets\\My\\Scripts\\JsonClass.cs",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAkwHwAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T00:06:12.038Z",
               "EditorCaption": ""
             },
             {
@@ -59,17 +58,18 @@
               "RelativeToolTip": "Assets\\My\\Scripts\\UICreator.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-04T07:16:58.568Z"
+              "WhenOpened": "2025-08-04T07:16:58.568Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "JsonLoader.cs",
               "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\JsonLoader.cs",
               "RelativeDocumentMoniker": "Assets\\My\\Scripts\\JsonLoader.cs",
               "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\JsonLoader.cs",
               "RelativeToolTip": "Assets\\My\\Scripts\\JsonLoader.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAkwEYAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAkwCAAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-01T04:35:38.685Z",
               "EditorCaption": ""
@@ -82,40 +82,42 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Reporter.cs",
-              "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\Unity-Logs-Viewer\\Reporter\\Reporter.cs",
-              "RelativeDocumentMoniker": "Assets\\Unity-Logs-Viewer\\Reporter\\Reporter.cs",
-              "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\Unity-Logs-Viewer\\Reporter\\Reporter.cs",
-              "RelativeToolTip": "Assets\\Unity-Logs-Viewer\\Reporter\\Reporter.cs",
-              "ViewState": "AgIAAOsIAAAAAAAAAAAWwM4IAABQAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "GameCloser.cs",
+              "DocumentMoniker": "D:\\Github\\DemoMission2\\Assets\\My\\Scripts\\GameCloser.cs",
+              "RelativeDocumentMoniker": "..\\DemoMission2\\Assets\\My\\Scripts\\GameCloser.cs",
+              "ToolTip": "D:\\Github\\DemoMission2\\Assets\\My\\Scripts\\GameCloser.cs",
+              "RelativeToolTip": "..\\DemoMission2\\Assets\\My\\Scripts\\GameCloser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-04T08:53:20.481Z",
+              "WhenOpened": "2025-08-05T04:04:15.995Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "GameManager.cs",
-              "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\Unity-Logs-Viewer\\GameManager.cs",
-              "RelativeDocumentMoniker": "Assets\\Unity-Logs-Viewer\\GameManager.cs",
-              "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\Unity-Logs-Viewer\\GameManager.cs",
-              "RelativeToolTip": "Assets\\Unity-Logs-Viewer\\GameManager.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAAUwDcAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-04T08:46:36.263Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "UIManager.cs",
               "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\UIManager.cs",
               "RelativeDocumentMoniker": "Assets\\My\\Scripts\\UIManager.cs",
               "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\My\\Scripts\\UIManager.cs",
               "RelativeToolTip": "Assets\\My\\Scripts\\UIManager.cs",
-              "ViewState": "AgIAALYAAAAAAAAAAAAYwNoAAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T08:11:58.008Z"
+              "WhenOpened": "2025-08-01T08:11:58.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Settings.json",
+              "DocumentMoniker": "D:\\Github\\80thPhotoBooth\\Assets\\StreamingAssets\\Settings.json",
+              "RelativeDocumentMoniker": "Assets\\StreamingAssets\\Settings.json",
+              "ToolTip": "D:\\Github\\80thPhotoBooth\\Assets\\StreamingAssets\\Settings.json",
+              "RelativeToolTip": "Assets\\StreamingAssets\\Settings.json",
+              "ViewState": "AgIAAJ8BAAAAAAAAAIAwwL4BAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-08-04T08:19:21.459Z",
+              "EditorCaption": ""
             }
           ]
         }

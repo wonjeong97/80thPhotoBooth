@@ -1,8 +1,10 @@
+using System.Collections;
 using System.IO;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Events;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -17,6 +19,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject textPrefab;
     [SerializeField] private GameObject imagePrefab;
 
+    private int itemFoundCount = 0;
+    private bool isGameCleared = false;
+
+    private GameObject gameBackground;
+    private GameObject inventory;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -27,13 +35,13 @@ public class UIManager : MonoBehaviour
     {
         CreateTitle();
     }
-    
+
     /// <summary>
     /// Title 캔버스 생성
     /// </summary>
     private void CreateTitle()
     {
-        TitleSetting setting = JsonLoader.Instance.Settings.titleSetting;        
+        TitleSetting setting = JsonLoader.Instance.Settings.titleSetting;
         GameObject bg = CreateBackgroundImage(setting.backgroundImage, titleCanvas);
 
         CreateTexts(setting.texts, bg);
@@ -49,10 +57,10 @@ public class UIManager : MonoBehaviour
 
     private void CreateGameUI()
     {
-        Game1Setting setting = JsonLoader.Instance.Settings.game1Setting;        
-        GameObject bg = CreateBackgroundImage(setting.game1BackgroundImage, gameCanvas);
+        Game1Setting setting = JsonLoader.Instance.Settings.game1Setting;
+        gameBackground = CreateBackgroundImage(setting.game1BackgroundImage, gameCanvas);
 
-        CreatePopup(setting.popupSetting, bg);
+        CreatePopup(setting.popupSetting, gameBackground);
     }
 
     #region UI Creator
@@ -63,7 +71,7 @@ public class UIManager : MonoBehaviour
     public GameObject CreateBackgroundImage(ImageSetting backgroundSetting, Transform parentCanvas)
     {
         GameObject bg = Instantiate(imagePrefab, parentCanvas);
-        bg.name = "Image_Background";
+        bg.name = backgroundSetting.name;
 
         Image image = bg.GetComponent<Image>();
         Texture2D texture = LoadTexture(backgroundSetting.imagePath);
@@ -73,7 +81,7 @@ public class UIManager : MonoBehaviour
         }
         image.color = backgroundSetting.imageColor;
 
-        RectTransform rt = bg.GetComponent<RectTransform>();        
+        RectTransform rt = bg.GetComponent<RectTransform>();
         rt.anchorMin = rt.anchorMax = backgroundSetting.position;
         rt.sizeDelta = backgroundSetting.size;
         rt.anchoredPosition = Vector2.zero;
@@ -102,13 +110,14 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 텍스트 생성
     /// </summary>
-    /// <param name="texts"></param>
+    /// <param name="settings"></param>
     /// <param name="parent"></param>
-    private void CreateTexts(TextSetting[] texts, GameObject parent)
+    private void CreateTexts(TextSetting[] settings, GameObject parent)
     {
-        foreach (var setting in texts)
+        foreach (var setting in settings)
         {
             GameObject go = Instantiate(textPrefab, parent.transform);
+            go.name = setting.name;
             TextMeshProUGUI uiText = go.GetComponent<TextMeshProUGUI>();
 
             uiText.text = setting.text;
@@ -126,16 +135,16 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 이미지 생성
     /// </summary>
-    /// <param name="images"></param>
+    /// <param name="settings"></param>
     /// <param name="parent"></param>
-    private void CreateImages(ImageSetting[] images, GameObject parent)
+    private void CreateImages(ImageSetting[] settings, GameObject parent)
     {
-        if (images == null || images.Length == 0) return;
+        if (settings == null || settings.Length == 0) return;
 
-        foreach (var setting in images)
+        foreach (var setting in settings)
         {
             GameObject go = Instantiate(imagePrefab, parent.transform);
-            go.name = $"Image_{Path.GetFileNameWithoutExtension(setting.imagePath)}";
+            go.name = setting.name;
 
             Image image = go.GetComponent<Image>();
             Texture2D texture = LoadTexture(setting.imagePath);
@@ -158,10 +167,10 @@ public class UIManager : MonoBehaviour
     /// </summary>
     /// <param name="title"></param>
     /// <param name="parent"></param>
-    private void CreateButton(ButtonSetting setting, GameObject parent, UnityAction onClickAction)
+    private GameObject CreateButton(ButtonSetting setting, GameObject parent, UnityAction onClickAction)
     {
         GameObject go = Instantiate(buttonPrefab, parent.transform);
-        go.name = "Button";
+        go.name = setting.name;
 
         RectTransform rt = go.GetComponent<RectTransform>();
         rt.anchorMin = rt.anchorMax = setting.buttonPosition;
@@ -206,29 +215,155 @@ public class UIManager : MonoBehaviour
         {
             button.onClick.AddListener(onClickAction);
         }
+
+        return go;
     }
 
     private void CreatePopup(PopupSetting setting, GameObject parent)
     {
         GameObject popupBG = CreateBackgroundImage(setting.popupBackgroundImage, parent.transform);
+        popupBG.name = setting.name;
 
         CreateTexts(setting.popupTexts, popupBG);
         CreateImages(setting.popupImages, popupBG);
-        CreateButton(setting.popupButton, popupBG, () => 
-        { 
+        CreateButton(setting.popupButton, popupBG, () =>
+        {
             if (popupBG != null && popupBG.gameObject.activeInHierarchy)
             {
                 popupBG.gameObject.SetActive(false);
-                CreateInventory(JsonLoader.Instance.Settings.game1Setting.inventorySetting, parent);
+                // 비동기로 다음 프레임에 실행되도록 코루틴 사용 (안전하게)
+                StartCoroutine(DeferredPopupCloseHandler(parent));
             }
         });
     }
 
+    private IEnumerator DeferredPopupCloseHandler(GameObject parent)
+    {
+        // 1 프레임 기다렸다가 실행 (SetActive 이후 안정적으로 처리)
+        yield return null;
+
+        if (isGameCleared == false)
+        {
+            Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
+
+            // 인벤토리 생성
+            CreateInventory(game1Setting.inventorySetting, parent);
+
+            // 포토 버튼 생성
+            for (int i = 0; i < game1Setting.photoButtons.Length; i++)
+            {
+                GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
+                Button btn = gameButton.GetComponent<Button>();
+                if (btn != null)
+                {
+                    int index = i;
+                    btn.onClick.AddListener(() =>
+                    {
+                        string itemName = $"Item_{index}";
+                        GameObject itemIcon = GameObject.Find(itemName);
+                        if (itemIcon != null && itemIcon.TryGetComponent<Image>(out Image itemImage))
+                        {
+                            itemImage.material = null;
+
+                            itemFoundCount++;
+                            if (itemFoundCount == game1Setting.photoButtons.Length)
+                            {                               
+                                CreatePopup(JsonLoader.Instance.Settings.gameEndPopupSetting, gameBackground);
+                                if (inventory != null)
+                                {
+                                    RectTransform invRT = inventory.GetComponent<RectTransform>();
+                                    invRT.anchorMin = invRT.anchorMax = JsonLoader.Instance.Settings.gameEndInventoryPosition;
+                                    invRT.pivot = new Vector2(0.5f, 0.5f);
+                                    invRT.anchoredPosition = Vector2.zero;
+                                }
+
+                                isGameCleared = true;
+                            }
+
+                            btn.gameObject.SetActive(false);
+                        }
+                    });
+                }
+            }
+        }
+        else if (isGameCleared == true)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+    }
+
     private void CreateInventory(InventorySetting setting, GameObject parent)
     {
-        GameObject inventoryBG = CreateBackgroundImage(setting.inventoryBackgroundImage, parent.transform);
+        // 패널 생성
+        GameObject panel = new GameObject("Panel_Inventory", typeof(RectTransform));
+        panel.transform.SetParent(parent.transform, false);
 
+        inventory = panel;
 
+        RectTransform panelRT = panel.GetComponent<RectTransform>();
+        panelRT.anchorMin = panelRT.anchorMax = panelRT.pivot = setting.inventoryPosition;
+        panelRT.sizeDelta = setting.inventorySize;
+        panelRT.anchoredPosition = Vector2.zero;
+
+        // 배경 이미지 생성 및 패널에 추가
+        GameObject bg = Instantiate(imagePrefab, panel.transform);
+        bg.name = setting.inventoryBackgroundImage.name;
+
+        Image image = bg.GetComponent<Image>();
+        Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
+        if (texture)
+        {
+            image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+        }
+        image.color = setting.inventoryBackgroundImage.imageColor;
+        image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
+
+        RectTransform bgRT = bg.GetComponent<RectTransform>();
+        bgRT.anchorMin = bgRT.anchorMax = setting.inventoryBackgroundImage.position;
+        bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
+        bgRT.anchoredPosition = Vector2.zero;
+
+        CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows, setting.itemPadding);
+    }
+
+    private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows, float padding)
+    {
+        Vector2 cellSize = new Vector2(
+            (parentRT.sizeDelta.x - padding * (columns + 1)) / columns,
+            (parentRT.sizeDelta.y - padding * (rows + 1)) / rows
+        );
+
+        for (int i = 0; i < settings.Length && i < columns * rows; i++)
+        {
+            int row = i / columns;
+            int col = i % columns;
+
+            float x = -parentRT.sizeDelta.x / 2 + padding + col * (cellSize.x + padding) + cellSize.x / 2;
+            float y = parentRT.sizeDelta.y / 2 - padding - row * (cellSize.y + padding) - cellSize.y / 2;
+
+            Vector2 anchoredPos = new Vector2(x, y);
+
+            GameObject itemGO = Instantiate(imagePrefab, parentRT);
+            itemGO.name = $"Item_{i}";
+
+            Image img = itemGO.GetComponent<Image>();
+            Texture2D tex = LoadTexture(settings[i].imagePath);
+            if (tex)
+            {
+                img.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+            }
+            img.color = settings[i].imageColor;
+            img.type = (Image.Type)settings[i].imageType;
+
+            Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale"); // Resources/Materials/Grayscale.mat
+            img.material = grayscaleMat;
+
+            RectTransform itemRT = itemGO.GetComponent<RectTransform>();
+            itemRT.sizeDelta = cellSize;
+            itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
+            itemRT.pivot = new Vector2(0.5f, 0.5f);
+            itemRT.anchoredPosition = anchoredPos;
+        }
     }
     #endregion
 }

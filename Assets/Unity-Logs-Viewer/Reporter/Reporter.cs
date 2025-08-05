@@ -73,6 +73,7 @@ public class Images
 
 public class Reporter : MonoBehaviour
 {
+    public static Reporter Instance { get; private set; }
     public enum _LogType
     {
         Assert = LogType.Assert,
@@ -321,12 +322,22 @@ public class Reporter : MonoBehaviour
 
     void Awake()
     {
-        if (!Initialized)
-            Initialize();
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            if (!Initialized)
+                Initialize();
 
 #if UNITY_CHANGE3
-        SceneManager.sceneLoaded += _OnLevelWasLoaded;
+            SceneManager.sceneLoaded += _OnLevelWasLoaded;
 #endif
+        }
+        else
+        {
+            Destroy(gameObject); // 중복 인스턴스 제거
+        }
     }
 
     private void OnDestroy()
@@ -397,7 +408,7 @@ public class Reporter : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("tow manager is exists delete the second");
+            Debug.LogWarning("two manager is exists delete the second");
             DestroyImmediate(gameObject, true);
             return;
         }
