@@ -1,0 +1,151 @@
+{
+	"closeSetting":
+	{
+		"position": { "x": 1, "y": 1 },
+		"numToClose": 10,
+		"resetClickTime": 60,
+		"imageAlpha": 0.1
+	},
+	"titleSetting":
+	{
+		"backgroundImage": 
+		{
+			"imagePath": "Image/Background/1_background.png",
+			"position": { "x": 0.5, "y": 0.5 },
+ 			"size": { "x": 1920, "y": 1080 },
+			"imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+			"imageType": 0, 
+			"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+		},
+		"texts":
+		[
+			{
+				"text": "숨은 <color=#FFFF00>사진</color> 찾기",
+				"position": { "x": 0.5, "y": 0.8 },
+				"rotationZ" : 0.0,
+				"fontResourceName": "BlackHanSans-Regular SDF",
+				"fontSize": 170,
+				"fontColor":  {"r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0  }
+			},
+			{
+				"text": "과학관 곳곳에 숨겨진\n사진 속 이야기들을 찾아보자!",
+				"position": { "x": 0.5, "y": 0.55 },
+				"rotationZ" : 0.0,
+				"fontResourceName": "BlackHanSans-Regular SDF",
+				"fontSize": 90,
+				"fontColor":  {"r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0  }
+			}
+		],
+		"startButton":
+		{
+			"buttonSize": { "x": 400, "y": 160 },
+			"buttonPosition": { "x": 0.5, "y": 0.2 },
+			"buttonImage":
+			{
+				"imagePath": "Image/Background/1_background.png",
+				"position": { "x": 0.5, "y": 0.5 },
+	 			"size": { "x": 10, "y": 10 },
+				"imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+				"imageType": 0, 
+				"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+			},
+			"buttonText":
+			{
+				"text": "시작하기",
+				"position": { "x": 0.5, "y": 0.5 },
+				"rotationZ" : 0.0,
+				"fontResourceName": "BlackHanSans-Regular SDF",
+				"fontSize": 70,
+				"fontColor":  {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0  }
+			}
+		}
+	},
+	"game1Setting":
+	{
+		"game1BackgroundImage": 
+		{
+			"imagePath": "Image/Background/sample.png",
+			"position": { "x": 0.5, "y": 0.5 },
+ 			"size": { "x": 1920, "y": 1080 },
+			"imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+			"imageType": 0, 
+			"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+		},
+		"popupSetting":
+		{
+			"popupBackgroundImage":
+			{
+				"imagePath": "Image/Background/1_background.png",
+				"position": { "x": 0.5, "y": 0.5 },
+	 			"size": { "x": 1850, "y": 900 },
+				"imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
+				"imageType": 0 
+			},
+			"popupTexts":
+			[
+				{
+					"text": "숨은 <color=#FFFF00>사진</color> 찾기",
+					"position": { "x": 0.5, "y": 0.9 },
+					"rotationZ" : 0.0,
+					"fontResourceName": "BlackHanSans-Regular SDF",
+					"fontSize": 110,
+					"fontColor":  {"r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0  }
+				},
+				{
+					"text": "과학관 맵 곳곳에 숨어있는\n사진 카메라를 찾아 인벤토리를 채워주세요!",
+					"position": { "x": 0.5, "y": 0.75 },
+					"rotationZ" : 0.0,
+					"fontResourceName": "NanumGothic-Regular SDF",
+					"fontSize": 55,
+					"fontColor":  {"r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0  }
+				}
+			],
+			"popupImages":
+			[
+				{
+					"imagePath": "Image/1_Camera.jpg",
+					"position": { "x": 0.5, "y": 0.45 },
+					"size": { "x": 525, "y": 375 },
+					"imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+					"imageType": 0, 
+					"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+				}
+			],
+			"popupButton":
+			{
+				"buttonSize": { "x": 300, "y": 140 },
+				"buttonPosition": { "x": 0.5, "y": 0.1 },
+				"buttonImage":
+				{
+					"imagePath": "Image/Background/1_background.png",
+					"position": { "x": 0.5, "y": 0.5 },
+		 			"size": { "x": 10, "y": 10 },
+					"imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+					"imageType": 0, 
+					"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+				},
+				"buttonText":
+				{
+					"text": "출발!",
+					"position": { "x": 0.5, "y": 0.5 },
+					"rotationZ" : 0.0,
+					"fontResourceName": "BlackHanSans-Regular SDF",
+					"fontSize": 70,
+					"fontColor":  {"r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0  }
+				}
+			}
+		},
+		"inventorySetting":
+		{
+			"inventoryBackgroundImage":
+			{
+				"imagePath": "Image/Background/1_background.png",
+				"position": { "x": 0.0, "y": 1.0 },
+		 		"size": { "x": 960, "y": 100 },
+				"imageColor": { "r": 1.0, "g": 1.0, "b": 1.5, "a": 1.0 },
+				"imageType": 0, 
+				"__comment": "0: Simple, 1: Sliced, 2: Tiled, 3: Filled"
+			}
+		}
+	}
+}
