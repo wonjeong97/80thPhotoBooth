@@ -118,6 +118,7 @@ public class SoundSetting
 {
     public string key;
     public String clipPath;
+    public float volume = 1.0f;
 }
 
 [Serializable]

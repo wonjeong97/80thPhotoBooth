@@ -5,8 +5,8 @@
         "font2": "NanumGothic-Regular SDF"
     },
     "sounds" : [
-        {"key": "click1", "clipPath": "click1.wav"},
-        {"key": "click2", "clipPath": "click2.wav"}
+        {"key": "click1", "clipPath": "click1.wav", "volume": 1.0},
+        {"key": "click2", "clipPath": "click2.wav", "volume": 0.5}
     ],
     "closeSetting": {
         "position": { "x": 1, "y": 1 },

@@ -37,6 +37,7 @@ public class UIManager : MonoBehaviour
 
     private Dictionary<string, Image> itemIcons = new Dictionary<string, Image>();
     private Dictionary<string, AudioClip> soundMap = new Dictionary<string, AudioClip>();
+    private Dictionary<string, float> soundVolumeMap = new Dictionary<string, float>();
 
     private void Awake()
     {
@@ -527,7 +528,8 @@ public class UIManager : MonoBehaviour
             {
                 // 성공적으로 로드되면 Dictionary에 저장
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-                soundMap[entry.key] = clip;
+                soundMap[entry.key] = clip; // 오디오 클립 저장
+                soundVolumeMap[entry.key] = entry.volume;   // 볼륨 저장
             }
             else
             {
@@ -546,6 +548,8 @@ public class UIManager : MonoBehaviour
         // AudioSource가 있고, 해당 key에 대한 clip이 있으면 재생
         if (uiAudioSource != null && soundMap.TryGetValue(key, out AudioClip clip))
         {
+            // 키에 해당하는 볼륨 없으면 기본값 1.0 사용
+            float volume = soundVolumeMap.TryGetValue(key, out float v) ? v : 1.0f;
             uiAudioSource.PlayOneShot(clip);
         }
     }
