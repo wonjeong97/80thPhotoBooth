@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -6,6 +7,9 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// UI 생성과 게임 시작, 팝업 처리, 인벤토리 관리 등을 담당하는 클래스
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
@@ -20,10 +24,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject imagePrefab;
 
     private int itemFoundCount = 0;
-    private bool isGameCleared = false;
+
+    private float inactivityTimer;
+    private float inactivityThreshold = 60f; // 입력이 없는 경우 타이틀로 되돌아가는 시간
 
     private GameObject gameBackground;
     private GameObject inventory;
+
+    private Dictionary<string, Image> itemIcons = new Dictionary<string, Image>();
 
     private void Awake()
     {
@@ -34,10 +42,35 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         CreateTitle();
+
+        if (JsonLoader.Instance.Settings != null)
+        {
+            inactivityThreshold = JsonLoader.Instance.Settings.inactivityTime;
+        }
+    }
+
+    private void Update()
+    {
+        // 게임 캔버스가 활성화 된 경우,
+        // 입력이 일정시간 이상 없을 시 씬을 재로드
+        if (gameCanvas != null && gameCanvas.gameObject.activeInHierarchy)
+        {
+            inactivityTimer += Time.deltaTime;
+
+            if (inactivityTimer >= inactivityThreshold)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+
+            if (Input.anyKeyDown || Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+            {
+                inactivityTimer = 0f;
+            }
+        }
     }
 
     /// <summary>
-    /// Title 캔버스 생성
+    /// 타이틀 화면 구성
     /// </summary>
     private void CreateTitle()
     {
@@ -50,24 +83,27 @@ public class UIManager : MonoBehaviour
             if (titleCanvas != null && titleCanvas.gameObject.activeInHierarchy)
             {
                 titleCanvas.gameObject.SetActive(false);
+                gameCanvas.gameObject.SetActive(true);
                 CreateGameUI();
             }
         });
     }
 
+    /// <summary>
+    /// 게임화면 UI 구성
+    /// </summary>
     private void CreateGameUI()
     {
         Game1Setting setting = JsonLoader.Instance.Settings.game1Setting;
         gameBackground = CreateBackgroundImage(setting.game1BackgroundImage, gameCanvas);
 
-        CreatePopup(setting.popupSetting, gameBackground);
+        CreateStartPopup();
     }
 
     #region UI Creator
     /// <summary>
-    /// 타이틀 UI의 배경화면 생성
+    /// 배경 이미지 생성
     /// </summary>
-    /// <param name="backgroundSetting"></param>
     public GameObject CreateBackgroundImage(ImageSetting backgroundSetting, Transform parentCanvas)
     {
         GameObject bg = Instantiate(imagePrefab, parentCanvas);
@@ -81,13 +117,12 @@ public class UIManager : MonoBehaviour
         }
         image.color = backgroundSetting.imageColor;
 
-        RectTransform rt = bg.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = backgroundSetting.position;
+        RectTransform rt = bg.GetComponent<RectTransform>();        
+        rt.pivot = new Vector2(0f, 1f);
         rt.sizeDelta = backgroundSetting.size;
-        rt.anchoredPosition = Vector2.zero;
+        rt.anchoredPosition = new Vector2(backgroundSetting.position.x, -backgroundSetting.position.y);
 
         bg.transform.SetAsFirstSibling(); // 맨 뒤로 보내기
-
         return bg;
     }
 
@@ -110,33 +145,45 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 텍스트 생성
     /// </summary>
-    /// <param name="settings"></param>
-    /// <param name="parent"></param>
     private void CreateTexts(TextSetting[] settings, GameObject parent)
     {
         foreach (var setting in settings)
         {
+            string mappedFontName = ResolveFont(setting.fontResourceName);
+
             GameObject go = Instantiate(textPrefab, parent.transform);
             go.name = setting.name;
-            TextMeshProUGUI uiText = go.GetComponent<TextMeshProUGUI>();
 
+            TextMeshProUGUI uiText = go.GetComponent<TextMeshProUGUI>();
             uiText.text = setting.text;
-            uiText.font = Resources.Load<TMP_FontAsset>($"Font/{setting.fontResourceName}");
+            uiText.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
             uiText.fontSize = setting.fontSize;
             uiText.color = setting.fontColor;
-            uiText.alignment = TextAlignmentOptions.Center; // 중앙 정렬 (선택사항)
+            uiText.alignment = TextAlignmentOptions.Center; // 중앙 정렬
 
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = setting.position;
-            rt.anchoredPosition = Vector2.zero; // ← 위치가 겹치는 것 방지
+            rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
             rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
         }
     }
+
+    private string ResolveFont(string key)
+    {
+        var fontMap = JsonLoader.Instance.Settings.fontMap;
+        if (fontMap == null) return key;
+
+        var field = typeof(FontMapping).GetField(key);
+        if (field != null)
+        {
+            return field.GetValue(fontMap) as string ?? key;
+        }
+
+        return key;
+    }
+
     /// <summary>
     /// 이미지 생성
     /// </summary>
-    /// <param name="settings"></param>
-    /// <param name="parent"></param>
     private void CreateImages(ImageSetting[] settings, GameObject parent)
     {
         if (settings == null || settings.Length == 0) return;
@@ -156,26 +203,22 @@ public class UIManager : MonoBehaviour
             image.type = (Image.Type)setting.imageType;
 
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = setting.position;
             rt.sizeDelta = setting.size;
-            rt.anchoredPosition = Vector2.zero;
+            rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
         }
     }
 
     /// <summary>
-    /// 버튼 생성
+    /// 버튼 생성 및 클릭 이벤트 연결
     /// </summary>
-    /// <param name="title"></param>
-    /// <param name="parent"></param>
     private GameObject CreateButton(ButtonSetting setting, GameObject parent, UnityAction onClickAction)
     {
         GameObject go = Instantiate(buttonPrefab, parent.transform);
         go.name = setting.name;
 
         RectTransform rt = go.GetComponent<RectTransform>();
-        rt.anchorMin = rt.anchorMax = setting.buttonPosition;
         rt.sizeDelta = setting.buttonSize;
-        rt.anchoredPosition = Vector2.zero;
+        rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
 
         // 배경 이미지 설정
         Image image = go.GetComponent<Image>();
@@ -194,18 +237,19 @@ public class UIManager : MonoBehaviour
 
         // 텍스트 설정 (자식에 TextMeshProUGUI 컴포넌트가 있다고 가정)
         TextMeshProUGUI text = go.GetComponentInChildren<TextMeshProUGUI>();
-        if (text != null && setting.buttonText != null)
+
+        if (text != null && setting.buttonText != null &&
+            !string.IsNullOrEmpty(setting.buttonText.text) &&
+            !string.IsNullOrEmpty(setting.buttonText.fontResourceName))
         {
+            string mappedFontName = ResolveFont(setting.buttonText.fontResourceName);
+
             text.text = setting.buttonText.text;
-            text.font = Resources.Load<TMP_FontAsset>($"Font/{setting.buttonText.fontResourceName}");
+            text.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
             text.fontSize = setting.buttonText.fontSize;
             text.color = setting.buttonText.fontColor;
 
             RectTransform textRT = text.GetComponent<RectTransform>();
-            textRT.anchorMin = Vector2.zero;
-            textRT.anchorMax = Vector2.one;
-            textRT.offsetMin = Vector2.zero;
-            textRT.offsetMax = Vector2.zero;
             textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
         }
 
@@ -219,22 +263,85 @@ public class UIManager : MonoBehaviour
         return go;
     }
 
-    private void CreatePopup(PopupSetting setting, GameObject parent)
+    /// <summary>
+    /// 게임 시작 안내 팝업을 생성합니다.
+    /// 출발 버튼 클릭 시 인벤토리와 사진 버튼들을 생성합니다.
+    /// </summary>
+    private void CreateStartPopup()
+    {
+        // 게임 시작 팝업 설정 불러오기
+        PopupSetting setting = JsonLoader.Instance.Settings.game1Setting.popupSetting;
+
+        // 팝업 생성 (닫기 이벤트 포함)
+        CreatePopup(setting, gameBackground, () =>
+        {
+            // 팝업 닫힌 후 다음 단계 실행
+            StartCoroutine(DeferredPopupCloseHandler(gameBackground));
+        });
+    }
+
+    /// <summary>
+    /// 설명 팝업을 생성합니다. 인덱스에 따라 해당 설명 내용을 로드합니다.
+    /// 닫기 버튼 클릭 시 모든 아이템을 찾았다면 엔딩 팝업으로 넘어갑니다.
+    /// </summary>
+    /// <param name="index">해당 포토 버튼 인덱스</param>
+    private void CreateExplainPopup(int index)
+    {
+        var explainSettings = JsonLoader.Instance.Settings.explainPopupSetting;
+        if (index < 0 || index >= explainSettings.Length)
+        {
+            Debug.LogWarning($"잘못된 인덱스: {index}");
+            return;
+        }
+
+        CreatePopup(explainSettings[index], gameBackground, () =>
+        {
+            // 설명 팝업 닫기 시 아이템 수 체크
+            if (itemFoundCount == JsonLoader.Instance.Settings.game1Setting.photoButtons.Length)
+            {
+                CreateGameEndPopup();
+            }
+        });
+    }
+
+    /// <summary>
+    /// 게임 종료 팝업을 생성하고 인벤토리 위치를 중앙으로 이동시킵니다.
+    /// </summary>
+    private void CreateGameEndPopup()
+    {
+        CreatePopup(JsonLoader.Instance.Settings.gameEndPopupSetting, gameBackground, () =>
+        {
+            inventory.SetActive(false);            
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });
+
+        if (inventory != null)
+        {
+            RectTransform invRT = inventory.GetComponent<RectTransform>();
+            invRT.pivot = new Vector2(0.5f, 0.5f);
+            invRT.anchoredPosition = new(JsonLoader.Instance.Settings.gameEndInventoryPosition.x, -JsonLoader.Instance.Settings.gameEndInventoryPosition.y);
+
+            // 팝업보다 인벤토리를 위로 이동
+            inventory.transform.SetAsLastSibling();
+        }
+    }
+
+    private void CreatePopup(PopupSetting setting, GameObject parent, UnityAction onClose = null)
     {
         GameObject popupBG = CreateBackgroundImage(setting.popupBackgroundImage, parent.transform);
         popupBG.name = setting.name;
 
         CreateTexts(setting.popupTexts, popupBG);
         CreateImages(setting.popupImages, popupBG);
+
         CreateButton(setting.popupButton, popupBG, () =>
         {
-            if (popupBG != null && popupBG.gameObject.activeInHierarchy)
-            {
-                popupBG.gameObject.SetActive(false);
-                // 비동기로 다음 프레임에 실행되도록 코루틴 사용 (안전하게)
-                StartCoroutine(DeferredPopupCloseHandler(parent));
-            }
+            popupBG.SetActive(false);
+            onClose?.Invoke(); // 닫기 후 실행
         });
+
+        // 팝업을 UI 최상단으로 이동
+        popupBG.transform.SetAsLastSibling();
     }
 
     private IEnumerator DeferredPopupCloseHandler(GameObject parent)
@@ -242,72 +349,44 @@ public class UIManager : MonoBehaviour
         // 1 프레임 기다렸다가 실행 (SetActive 이후 안정적으로 처리)
         yield return null;
 
-        if (isGameCleared == false)
+        Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
+
+        // 인벤토리 생성
+        CreateInventory(game1Setting.inventorySetting, parent);
+
+        // 포토 버튼 생성 및 이벤트 연결
+        for (int i = 0; i < game1Setting.photoButtons.Length; i++)
         {
-            Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
+            GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
+            Button btn = gameButton.GetComponent<Button>();
 
-            // 인벤토리 생성
-            CreateInventory(game1Setting.inventorySetting, parent);
-
-            // 포토 버튼 생성
-            for (int i = 0; i < game1Setting.photoButtons.Length; i++)
+            if (btn != null)
             {
-                GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
-                Button btn = gameButton.GetComponent<Button>();
-                if (btn != null)
+                int index = i;
+
+                btn.onClick.AddListener(() =>
                 {
-                    int index = i;
-                    btn.onClick.AddListener(() =>
+                    if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
                     {
-                        string itemName = $"Item_{index}";
-                        GameObject itemIcon = GameObject.Find(itemName);
-                        if (itemIcon != null && itemIcon.TryGetComponent<Image>(out Image itemImage))
-                        {
-                            itemImage.material = null;
+                        itemImage.material = null;
+                        itemFoundCount++;
 
-                            itemFoundCount++;
-                            if (itemFoundCount == game1Setting.photoButtons.Length)
-                            {                               
-                                CreatePopup(JsonLoader.Instance.Settings.gameEndPopupSetting, gameBackground);
-                                if (inventory != null)
-                                {
-                                    RectTransform invRT = inventory.GetComponent<RectTransform>();
-                                    invRT.anchorMin = invRT.anchorMax = JsonLoader.Instance.Settings.gameEndInventoryPosition;
-                                    invRT.pivot = new Vector2(0.5f, 0.5f);
-                                    invRT.anchoredPosition = Vector2.zero;
-                                }
+                        btn.gameObject.SetActive(false);
 
-                                isGameCleared = true;
-                            }
-
-                            btn.gameObject.SetActive(false);
-                        }
-                    });
-                }
+                        // 설명 팝업 생성
+                        CreateExplainPopup(index);
+                    }
+                });
             }
-        }
-        else if (isGameCleared == true)
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
     private void CreateInventory(InventorySetting setting, GameObject parent)
     {
-        // 패널 생성
-        GameObject panel = new GameObject("Panel_Inventory", typeof(RectTransform));
-        panel.transform.SetParent(parent.transform, false);
-
-        inventory = panel;
-
-        RectTransform panelRT = panel.GetComponent<RectTransform>();
-        panelRT.anchorMin = panelRT.anchorMax = panelRT.pivot = setting.inventoryPosition;
-        panelRT.sizeDelta = setting.inventorySize;
-        panelRT.anchoredPosition = Vector2.zero;
-
-        // 배경 이미지 생성 및 패널에 추가
-        GameObject bg = Instantiate(imagePrefab, panel.transform);
+        // 배경 이미지 생성
+        GameObject bg = Instantiate(imagePrefab, parent.transform);
         bg.name = setting.inventoryBackgroundImage.name;
+        inventory = bg;
 
         Image image = bg.GetComponent<Image>();
         Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
@@ -319,15 +398,16 @@ public class UIManager : MonoBehaviour
         image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
 
         RectTransform bgRT = bg.GetComponent<RectTransform>();
-        bgRT.anchorMin = bgRT.anchorMax = setting.inventoryBackgroundImage.position;
         bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
-        bgRT.anchoredPosition = Vector2.zero;
+        bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
 
         CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows, setting.itemPadding);
     }
 
     private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows, float padding)
     {
+        itemIcons.Clear(); // 새로 생성 시 초기화
+
         Vector2 cellSize = new Vector2(
             (parentRT.sizeDelta.x - padding * (columns + 1)) / columns,
             (parentRT.sizeDelta.y - padding * (rows + 1)) / rows
@@ -363,6 +443,8 @@ public class UIManager : MonoBehaviour
             itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
             itemRT.pivot = new Vector2(0.5f, 0.5f);
             itemRT.anchoredPosition = anchoredPos;
+
+            itemIcons[$"Item_{i}"] = img;
         }
     }
     #endregion
