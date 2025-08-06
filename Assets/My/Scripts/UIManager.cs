@@ -4,6 +4,7 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,36 +16,43 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
 
     [Header("UI Canvas")]
-    [SerializeField] private Transform titleCanvas;
-    [SerializeField] private Transform gameCanvas;
+    [SerializeField] private Transform titleCanvas;     // 타이틀 캔버스
+    [SerializeField] private Transform gameCanvas;      // 게임 캔버스
 
     [Header("UI 프리팹")]
-    [SerializeField] private GameObject buttonPrefab;
-    [SerializeField] private GameObject textPrefab;
-    [SerializeField] private GameObject imagePrefab;
+    [SerializeField] private GameObject buttonPrefab;   // 동적 생성 버튼 프리팹
+    [SerializeField] private GameObject textPrefab;     // 동적 생성 텍스트 프리팹
+    [SerializeField] private GameObject imagePrefab;    // 동적 생성 이미지 프리팹
 
-    private int itemFoundCount = 0;
+    [Header("Audio")]
+    [SerializeField] private AudioSource uiAudioSource; // UI 사운드 소스
+
+    private int itemFoundCount = 0;                     // 게임 버튼을 누른 수
 
     private float inactivityTimer;
     private float inactivityThreshold = 60f; // 입력이 없는 경우 타이틀로 되돌아가는 시간
 
-    private GameObject gameBackground;
-    private GameObject inventory;
+    private GameObject gameBackground;       // 게임 캔버스 백그라운드 이미지
+    private GameObject inventory;            // 인벤토리 오브젝트
 
     private Dictionary<string, Image> itemIcons = new Dictionary<string, Image>();
+    private Dictionary<string, AudioClip> soundMap = new Dictionary<string, AudioClip>();
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
+
+        StartCoroutine(LoadSoundsFromSettings()); // 사운드 로딩
     }
 
     private void Start()
     {
-        CreateTitle();
+        CreateTitle();  // 타이틀 이미지 생성
 
         if (JsonLoader.Instance.Settings != null)
-        {
+        {   
+            // JSON 세팅에서 미입력시간을 받아옴
             inactivityThreshold = JsonLoader.Instance.Settings.inactivityTime;
         }
     }
@@ -57,6 +65,7 @@ public class UIManager : MonoBehaviour
         {
             inactivityTimer += Time.deltaTime;
 
+            // 임계값 초과 시 씬 재로드
             if (inactivityTimer >= inactivityThreshold)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -79,7 +88,9 @@ public class UIManager : MonoBehaviour
 
         CreateTexts(setting.texts, bg);
         CreateButton(setting.startButton, bg, () =>
-        {
+        {   
+            // 스타트 버튼 클릭 시 동작 설정
+
             if (titleCanvas != null && titleCanvas.gameObject.activeInHierarchy)
             {
                 titleCanvas.gameObject.SetActive(false);
@@ -108,38 +119,26 @@ public class UIManager : MonoBehaviour
     {
         GameObject bg = Instantiate(imagePrefab, parentCanvas);
         bg.name = backgroundSetting.name;
-
-        Image image = bg.GetComponent<Image>();
-        Texture2D texture = LoadTexture(backgroundSetting.imagePath);
-        if (texture)
-        {
-            image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-        }
-        image.color = backgroundSetting.imageColor;
-
-        RectTransform rt = bg.GetComponent<RectTransform>();        
-        rt.pivot = new Vector2(0f, 1f);
-        rt.sizeDelta = backgroundSetting.size;
-        rt.anchoredPosition = new Vector2(backgroundSetting.position.x, -backgroundSetting.position.y);
-
         bg.transform.SetAsFirstSibling(); // 맨 뒤로 보내기
+
+        if (bg.TryGetComponent<Image>(out Image image))
+        {
+            Texture2D texture = LoadTexture(backgroundSetting.imagePath);
+            if (texture)
+            {
+                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+            }
+            image.color = backgroundSetting.imageColor;
+        }        
+        
+        if (bg.TryGetComponent<RectTransform>(out RectTransform rt))
+        {
+            rt.pivot = new Vector2(0f, 1f);
+            rt.sizeDelta = backgroundSetting.size;
+            rt.anchoredPosition = new Vector2(backgroundSetting.position.x, -backgroundSetting.position.y);
+        }       
+        
         return bg;
-    }
-
-    /// <summary>
-    /// Path로부터 이미지를 읽고 텍스쳐로 변환
-    /// </summary>
-    /// <param name="relativePath"></param>
-    /// <returns></returns>
-    private Texture2D LoadTexture(string relativePath)
-    {
-        string path = Path.Combine(Application.streamingAssetsPath, relativePath);
-        if (!File.Exists(path)) return null;
-
-        byte[] fileData = File.ReadAllBytes(path);
-        Texture2D texture = new Texture2D(2, 2);
-        texture.LoadImage(fileData);
-        return texture;
     }
 
     /// <summary>
@@ -154,31 +153,21 @@ public class UIManager : MonoBehaviour
             GameObject go = Instantiate(textPrefab, parent.transform);
             go.name = setting.name;
 
-            TextMeshProUGUI uiText = go.GetComponent<TextMeshProUGUI>();
-            uiText.text = setting.text;
-            uiText.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
-            uiText.fontSize = setting.fontSize;
-            uiText.color = setting.fontColor;
-            uiText.alignment = TextAlignmentOptions.Center; // 중앙 정렬
+            if (go.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI uiText))
+            {
+                uiText.text = setting.text;
+                uiText.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
+                uiText.fontSize = setting.fontSize;
+                uiText.color = setting.fontColor;
+                uiText.alignment = TextAlignmentOptions.Center; // 중앙 정렬
+            }            
 
-            RectTransform rt = go.GetComponent<RectTransform>();
-            rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-            rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
+            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+            {
+                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+                rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
+            }           
         }
-    }
-
-    private string ResolveFont(string key)
-    {
-        var fontMap = JsonLoader.Instance.Settings.fontMap;
-        if (fontMap == null) return key;
-
-        var field = typeof(FontMapping).GetField(key);
-        if (field != null)
-        {
-            return field.GetValue(fontMap) as string ?? key;
-        }
-
-        return key;
     }
 
     /// <summary>
@@ -193,18 +182,22 @@ public class UIManager : MonoBehaviour
             GameObject go = Instantiate(imagePrefab, parent.transform);
             go.name = setting.name;
 
-            Image image = go.GetComponent<Image>();
-            Texture2D texture = LoadTexture(setting.imagePath);
-            if (texture)
+            if (go.TryGetComponent<Image>(out Image image))
             {
-                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-            }
-            image.color = setting.imageColor;
-            image.type = (Image.Type)setting.imageType;
+                Texture2D texture = LoadTexture(setting.imagePath);
+                if (texture)
+                {
+                    image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                }
+                image.color = setting.imageColor;
+                image.type = (Image.Type)setting.imageType;
+            }           
 
-            RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = setting.size;
-            rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+            {
+                rt.sizeDelta = setting.size;
+                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+            }            
         }
     }
 
@@ -216,13 +209,14 @@ public class UIManager : MonoBehaviour
         GameObject go = Instantiate(buttonPrefab, parent.transform);
         go.name = setting.name;
 
-        RectTransform rt = go.GetComponent<RectTransform>();
-        rt.sizeDelta = setting.buttonSize;
-        rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
+        if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+        {
+            rt.sizeDelta = setting.buttonSize;
+            rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
+        }      
 
         // 배경 이미지 설정
-        Image image = go.GetComponent<Image>();
-        if (setting.buttonImage != null)
+        if (go.TryGetComponent<Image>(out Image image) && setting.buttonImage != null)
         {
             Texture2D texture = LoadTexture(setting.buttonImage.imagePath);
             if (texture)
@@ -233,7 +227,7 @@ public class UIManager : MonoBehaviour
 
             // 이미지 타입 설정
             image.type = (Image.Type)setting.buttonImage.imageType;
-        }
+        }       
 
         // 텍스트 설정 (자식에 TextMeshProUGUI 컴포넌트가 있다고 가정)
         TextMeshProUGUI text = go.GetComponentInChildren<TextMeshProUGUI>();
@@ -248,17 +242,24 @@ public class UIManager : MonoBehaviour
             text.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
             text.fontSize = setting.buttonText.fontSize;
             text.color = setting.buttonText.fontColor;
-
-            RectTransform textRT = text.GetComponent<RectTransform>();
-            textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
+            
+            if (text.TryGetComponent<RectTransform>(out RectTransform textRT))
+            {
+                textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
+            }            
         }
 
-        // 버튼 클릭 이벤트 (원한다면 연결 가능)
-        Button button = go.GetComponent<Button>();
-        if (button != null && onClickAction != null)
+        // 버튼 클릭 이벤트
+        if (go.TryGetComponent<Button>(out Button button) && onClickAction != null)
         {
-            button.onClick.AddListener(onClickAction);
-        }
+            string soundKey = setting.buttonSound;
+
+            button.onClick.AddListener(() =>
+            {
+                PlayClickSound(soundKey);
+                onClickAction?.Invoke();
+            });
+        }        
 
         return go;
     }
@@ -276,8 +277,47 @@ public class UIManager : MonoBehaviour
         CreatePopup(setting, gameBackground, () =>
         {
             // 팝업 닫힌 후 다음 단계 실행
-            StartCoroutine(DeferredPopupCloseHandler(gameBackground));
+            StartCoroutine(AfterCloseStartPopup(gameBackground));
         });
+    }
+
+    /// <summary>
+    /// 스타트 팝업 창이 닫힌 후 인벤토리, 게임 버튼 생성 및 이벤트 연결
+    /// </summary>
+    /// <param name="parent">인벤토리 및 게임 버튼이 붙는 게임 캔버스의 배경 이미지</param>
+    /// <returns></returns>
+    private IEnumerator AfterCloseStartPopup(GameObject parent)
+    {
+        // 1 프레임 기다렸다가 실행 (SetActive 이후 안정적으로 처리)
+        yield return null;
+
+        Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
+        CreateInventory(game1Setting.inventorySetting, parent); // 인벤토리 생성
+
+        // 포토 버튼 생성 및 이벤트 연결
+        for (int i = 0; i < game1Setting.photoButtons.Length; i++)
+        {
+            GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
+            string soundKey = game1Setting.photoButtons[i].buttonSound;
+
+            if (gameButton.TryGetComponent<Button>(out Button btn))
+            {
+                int index = i;
+
+                btn.onClick.AddListener(() =>
+                {
+                    if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
+                    {
+                        PlayClickSound(soundKey);
+                        itemImage.material = null;  // 연결된 아이템 이미지의 색 복원
+                        itemFoundCount++;
+
+                        btn.gameObject.SetActive(false);
+                        CreateExplainPopup(index); // 설명 팝업 생성
+                    }
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -309,8 +349,12 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void CreateGameEndPopup()
     {
-        CreatePopup(JsonLoader.Instance.Settings.gameEndPopupSetting, gameBackground, () =>
+        PopupSetting setting = JsonLoader.Instance.Settings.gameEndPopupSetting;
+        string soundKey = setting.popupButton.buttonSound;
+
+        CreatePopup(setting, gameBackground, () =>
         {
+            PlayClickSound(soundKey);
             inventory.SetActive(false);            
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         });
@@ -344,43 +388,6 @@ public class UIManager : MonoBehaviour
         popupBG.transform.SetAsLastSibling();
     }
 
-    private IEnumerator DeferredPopupCloseHandler(GameObject parent)
-    {
-        // 1 프레임 기다렸다가 실행 (SetActive 이후 안정적으로 처리)
-        yield return null;
-
-        Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
-
-        // 인벤토리 생성
-        CreateInventory(game1Setting.inventorySetting, parent);
-
-        // 포토 버튼 생성 및 이벤트 연결
-        for (int i = 0; i < game1Setting.photoButtons.Length; i++)
-        {
-            GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
-            Button btn = gameButton.GetComponent<Button>();
-
-            if (btn != null)
-            {
-                int index = i;
-
-                btn.onClick.AddListener(() =>
-                {
-                    if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
-                    {
-                        itemImage.material = null;
-                        itemFoundCount++;
-
-                        btn.gameObject.SetActive(false);
-
-                        // 설명 팝업 생성
-                        CreateExplainPopup(index);
-                    }
-                });
-            }
-        }
-    }
-
     private void CreateInventory(InventorySetting setting, GameObject parent)
     {
         // 배경 이미지 생성
@@ -388,18 +395,22 @@ public class UIManager : MonoBehaviour
         bg.name = setting.inventoryBackgroundImage.name;
         inventory = bg;
 
-        Image image = bg.GetComponent<Image>();
-        Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
-        if (texture)
+        if(bg.TryGetComponent<Image>(out Image image))
         {
-            image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-        }
-        image.color = setting.inventoryBackgroundImage.imageColor;
-        image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
+            Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
+            if (texture)
+            {
+                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+            }
+            image.color = setting.inventoryBackgroundImage.imageColor;
+            image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
+        }       
 
-        RectTransform bgRT = bg.GetComponent<RectTransform>();
-        bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
-        bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
+        if (bg.TryGetComponent<RectTransform>(out RectTransform bgRT))
+        {
+            bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
+            bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
+        }       
 
         CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows, setting.itemPadding);
     }
@@ -413,6 +424,7 @@ public class UIManager : MonoBehaviour
             (parentRT.sizeDelta.y - padding * (rows + 1)) / rows
         );
 
+        // Column, Row에 맞춰 아이템 이미지 정렬
         for (int i = 0; i < settings.Length && i < columns * rows; i++)
         {
             int row = i / columns;
@@ -426,25 +438,115 @@ public class UIManager : MonoBehaviour
             GameObject itemGO = Instantiate(imagePrefab, parentRT);
             itemGO.name = $"Item_{i}";
 
-            Image img = itemGO.GetComponent<Image>();
-            Texture2D tex = LoadTexture(settings[i].imagePath);
-            if (tex)
+            if (itemGO.TryGetComponent<Image>(out Image img))
             {
-                img.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+                Texture2D tex = LoadTexture(settings[i].imagePath);
+                if (tex)
+                {
+                    img.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+                }
+                img.color = settings[i].imageColor;
+                img.type = (Image.Type)settings[i].imageType;
+
+                Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale"); // Resources/Materials/Grayscale.mat
+                img.material = grayscaleMat;
             }
-            img.color = settings[i].imageColor;
-            img.type = (Image.Type)settings[i].imageType;
-
-            Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale"); // Resources/Materials/Grayscale.mat
-            img.material = grayscaleMat;
-
-            RectTransform itemRT = itemGO.GetComponent<RectTransform>();
-            itemRT.sizeDelta = cellSize;
-            itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
-            itemRT.pivot = new Vector2(0.5f, 0.5f);
-            itemRT.anchoredPosition = anchoredPos;
-
+            
+            if (itemGO.TryGetComponent<RectTransform>(out RectTransform itemRT))
+            {
+                itemRT.sizeDelta = cellSize;
+                itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
+                itemRT.pivot = new Vector2(0.5f, 0.5f);
+                itemRT.anchoredPosition = anchoredPos;
+            }          
+           
             itemIcons[$"Item_{i}"] = img;
+        }
+    }
+    #endregion
+
+    #region Utils
+    /// <summary>
+    /// Path로부터 이미지를 읽고 텍스쳐로 변환
+    /// </summary>
+    /// <param name="relativePath"></param>
+    /// <returns></returns>
+    private Texture2D LoadTexture(string relativePath)
+    {
+        string path = Path.Combine(Application.streamingAssetsPath, relativePath);
+        if (!File.Exists(path)) return null;
+
+        byte[] fileData = File.ReadAllBytes(path);
+        Texture2D texture = new Texture2D(2, 2);
+        texture.LoadImage(fileData);
+        return texture;
+    }
+
+    /// <summary>
+    /// JSON의 font 키값(font1, font2 등)을 실제 폰트 파일 이름으로 매핑합니다.
+    /// FontMapping 클래스의 필드명을 리플렉션으로 찾아 반환합니다.
+    /// </summary>
+    /// <param name="key">JSON 내에 명시된 font 키 (예: "font1")</param>
+    /// <returns>실제 폰트 리소스 파일 이름 (예: "NanumGothic-Regular SDF")</returns>
+    private string ResolveFont(string key)
+    {
+        FontMapping fontMap = JsonLoader.Instance.Settings.fontMap;
+        if (fontMap == null) return key;
+
+        // 리플렉션을 통해 key에 해당하는 필드 정보를 얻음
+        var field = typeof(FontMapping).GetField(key);
+        if (field != null)
+        {
+            return field.GetValue(fontMap) as string ?? key; // 실제 폰트 이름 반환
+        }
+
+        return key; // 매핑 실패 시 원래 key 반환
+    }
+
+    /// <summary>
+    /// JSON에 정의된 사운드 목록을 StreamingAssets/Audio 경로에서 로드하여 soundMap에 저장합니다.
+    /// 각 사운드는 key-clip 쌍으로 저장되며, 재생 시 key로 참조합니다.
+    /// </summary>
+    private IEnumerator LoadSoundsFromSettings()
+    {
+        soundMap.Clear();
+
+        SoundSetting[] soundEntries = JsonLoader.Instance.Settings.sounds;
+        if (soundEntries == null) yield break;
+
+        foreach (SoundSetting entry in soundEntries)
+        {
+            // 전체 파일 경로 구성
+            string fullPath = Path.Combine(Application.streamingAssetsPath, "Audio", entry.clipPath).Replace("\\", "/");
+
+            // 파일에서 오디오 클립 로드 (WAV 파일 기준)
+            UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + fullPath, AudioType.WAV);
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                // 성공적으로 로드되면 Dictionary에 저장
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                soundMap[entry.key] = clip;
+            }
+            else
+            {
+                Debug.LogWarning($"[SoundLoader] 실패: {entry.clipPath} - {www.error}");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 지정된 사운드 키에 해당하는 AudioClip을 찾아 재생합니다.
+    /// 사운드는 UI 버튼 클릭 시 사용됩니다.
+    /// </summary>
+    /// <param name="key">JSON에 등록된 사운드 키 (예: "click1")</param>
+    private void PlayClickSound(string key)
+    {
+        // AudioSource가 있고, 해당 key에 대한 clip이 있으면 재생
+        if (uiAudioSource != null && soundMap.TryGetValue(key, out AudioClip clip))
+        {
+            uiAudioSource.PlayOneShot(clip);
         }
     }
     #endregion

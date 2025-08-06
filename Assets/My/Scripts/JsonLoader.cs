@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class JsonLoader : MonoBehaviour
@@ -69,6 +70,7 @@ public class CloseSetting
     public float resetClickTime;
     public float imageAlpha;
 }
+
 [Serializable]
 public class ImageSetting
 {
@@ -110,6 +112,14 @@ public class VideoSetting
     public Vector2 position;
     public Vector2 size;
 }
+
+[Serializable]
+public class SoundSetting
+{
+    public string key;
+    public String clipPath;
+}
+
 [Serializable]
 public class KeyboardSetting
 {
@@ -117,6 +127,7 @@ public class KeyboardSetting
     public Vector2 position;
     public Vector2 size;
 }
+
 [Serializable]
 public class PageSetting
 {
@@ -135,6 +146,7 @@ public class PrintSetting
     public int printFontSize;
     public string[] printKeys;
 }
+
 [Serializable]
 public class ButtonSetting
 {
@@ -143,7 +155,9 @@ public class ButtonSetting
     public Vector2 buttonPosition;
     public ImageSetting buttonImage;
     public TextSetting buttonText;
+    public string buttonSound;
 }
+
 [Serializable]
 public class TitleSetting
 {
@@ -187,6 +201,7 @@ public class Settings
 {
     public float inactivityTime; // 입력이 없을 시 타이틀로 되돌아가는 시간
     public FontMapping fontMap;
+    public SoundSetting[] sounds;
     public CloseSetting closeSetting;
     public TitleSetting titleSetting;
     public Game1Setting game1Setting;
