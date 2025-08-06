@@ -9,31 +9,31 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
-/// UI »ı¼º°ú °ÔÀÓ ½ÃÀÛ, ÆË¾÷ Ã³¸®, ÀÎº¥Åä¸® °ü¸® µîÀ» ´ã´çÇÏ´Â Å¬·¡½º
+/// UI ìƒì„±ê³¼ ê²Œì„ ì‹œì‘, íŒì—… ì²˜ë¦¬, ì¸ë²¤í† ë¦¬ ê´€ë¦¬ ë“±ì„ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
     [Header("UI Canvas")]
-    [SerializeField] private Transform titleCanvas;     // Å¸ÀÌÆ² Äµ¹ö½º
-    [SerializeField] private Transform gameCanvas;      // °ÔÀÓ Äµ¹ö½º
+    [SerializeField] private Transform titleCanvas;     // íƒ€ì´í‹€ ìº”ë²„ìŠ¤
+    [SerializeField] private Transform gameCanvas;      // ê²Œì„ ìº”ë²„ìŠ¤
 
-    [Header("UI ÇÁ¸®ÆÕ")]
-    [SerializeField] private GameObject buttonPrefab;   // µ¿Àû »ı¼º ¹öÆ° ÇÁ¸®ÆÕ
-    [SerializeField] private GameObject textPrefab;     // µ¿Àû »ı¼º ÅØ½ºÆ® ÇÁ¸®ÆÕ
-    [SerializeField] private GameObject imagePrefab;    // µ¿Àû »ı¼º ÀÌ¹ÌÁö ÇÁ¸®ÆÕ
+    [Header("UI í”„ë¦¬íŒ¹")]
+    [SerializeField] private GameObject buttonPrefab;   // ë™ì  ìƒì„± ë²„íŠ¼ í”„ë¦¬íŒ¹
+    [SerializeField] private GameObject textPrefab;     // ë™ì  ìƒì„± í…ìŠ¤íŠ¸ í”„ë¦¬íŒ¹
+    [SerializeField] private GameObject imagePrefab;    // ë™ì  ìƒì„± ì´ë¯¸ì§€ í”„ë¦¬íŒ¹
 
     [Header("Audio")]
-    [SerializeField] private AudioSource uiAudioSource; // UI »ç¿îµå ¼Ò½º
+    [SerializeField] private AudioSource uiAudioSource; // UI ì‚¬ìš´ë“œ ì†ŒìŠ¤
 
-    private int itemFoundCount = 0;                     // °ÔÀÓ ¹öÆ°À» ´©¸¥ ¼ö
+    private int itemFoundCount = 0;                     // ê²Œì„ ë²„íŠ¼ì„ ëˆ„ë¥¸ ìˆ˜
 
     private float inactivityTimer;
-    private float inactivityThreshold = 60f; // ÀÔ·ÂÀÌ ¾ø´Â °æ¿ì Å¸ÀÌÆ²·Î µÇµ¹¾Æ°¡´Â ½Ã°£
+    private float inactivityThreshold = 60f; // ì…ë ¥ì´ ì—†ëŠ” ê²½ìš° íƒ€ì´í‹€ë¡œ ë˜ëŒì•„ê°€ëŠ” ì‹œê°„
 
-    private GameObject gameBackground;       // °ÔÀÓ Äµ¹ö½º ¹é±×¶ó¿îµå ÀÌ¹ÌÁö
-    private GameObject inventory;            // ÀÎº¥Åä¸® ¿ÀºêÁ§Æ®
+    private GameObject gameBackground;       // ê²Œì„ ìº”ë²„ìŠ¤ ë°±ê·¸ë¼ìš´ë“œ ì´ë¯¸ì§€
+    private GameObject inventory;            // ì¸ë²¤í† ë¦¬ ì˜¤ë¸Œì íŠ¸
 
     private Dictionary<string, Image> itemIcons = new Dictionary<string, Image>();
     private Dictionary<string, AudioClip> soundMap = new Dictionary<string, AudioClip>();
@@ -44,29 +44,29 @@ public class UIManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
 
-        StartCoroutine(LoadSoundsFromSettings()); // »ç¿îµå ·Îµù
+        StartCoroutine(LoadSoundsFromSettings()); // ì‚¬ìš´ë“œ ë¡œë”©
     }
 
     private void Start()
     {
-        CreateTitle();  // Å¸ÀÌÆ² ÀÌ¹ÌÁö »ı¼º
+        CreateTitle();  // íƒ€ì´í‹€ ì´ë¯¸ì§€ ìƒì„±
 
         if (JsonLoader.Instance.Settings != null)
-        {   
-            // JSON ¼¼ÆÃ¿¡¼­ ¹ÌÀÔ·Â½Ã°£À» ¹Ş¾Æ¿È
+        {
+            // JSON ì„¸íŒ…ì—ì„œ ë¯¸ì…ë ¥ì‹œê°„ì„ ë°›ì•„ì˜´
             inactivityThreshold = JsonLoader.Instance.Settings.inactivityTime;
         }
     }
 
     private void Update()
     {
-        // °ÔÀÓ Äµ¹ö½º°¡ È°¼ºÈ­ µÈ °æ¿ì,
-        // ÀÔ·ÂÀÌ ÀÏÁ¤½Ã°£ ÀÌ»ó ¾øÀ» ½Ã ¾ÀÀ» Àç·Îµå
+        // ê²Œì„ ìº”ë²„ìŠ¤ê°€ í™œì„±í™” ëœ ê²½ìš°,
+        // ì…ë ¥ì´ ì¼ì •ì‹œê°„ ì´ìƒ ì—†ì„ ì‹œ ì”¬ì„ ì¬ë¡œë“œ
         if (gameCanvas != null && gameCanvas.gameObject.activeInHierarchy)
         {
             inactivityTimer += Time.deltaTime;
 
-            // ÀÓ°è°ª ÃÊ°ú ½Ã ¾À Àç·Îµå
+            // ì„ê³„ê°’ ì´ˆê³¼ ì‹œ ì”¬ ì¬ë¡œë“œ
             if (inactivityTimer >= inactivityThreshold)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Å¸ÀÌÆ² È­¸é ±¸¼º
+    /// íƒ€ì´í‹€ í™”ë©´ êµ¬ì„±
     /// </summary>
     private void CreateTitle()
     {
@@ -89,8 +89,8 @@ public class UIManager : MonoBehaviour
 
         CreateTexts(setting.texts, bg);
         CreateButton(setting.startButton, bg, () =>
-        {   
-            // ½ºÅ¸Æ® ¹öÆ° Å¬¸¯ ½Ã µ¿ÀÛ ¼³Á¤
+        {
+            // ìŠ¤íƒ€íŠ¸ ë²„íŠ¼ í´ë¦­ ì‹œ ë™ì‘ ì„¤ì •
 
             if (titleCanvas != null && titleCanvas.gameObject.activeInHierarchy)
             {
@@ -102,7 +102,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÔÀÓÈ­¸é UI ±¸¼º
+    /// ê²Œì„í™”ë©´ UI êµ¬ì„±
     /// </summary>
     private void CreateGameUI()
     {
@@ -114,13 +114,13 @@ public class UIManager : MonoBehaviour
 
     #region UI Creator
     /// <summary>
-    /// ¹è°æ ÀÌ¹ÌÁö »ı¼º
+    /// ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
     /// </summary>
     public GameObject CreateBackgroundImage(ImageSetting backgroundSetting, Transform parentCanvas)
     {
         GameObject bg = Instantiate(imagePrefab, parentCanvas);
         bg.name = backgroundSetting.name;
-        bg.transform.SetAsFirstSibling(); // ¸Ç µÚ·Î º¸³»±â
+        bg.transform.SetAsFirstSibling(); // ë§¨ ë’¤ë¡œ ë³´ë‚´ê¸°
 
         if (bg.TryGetComponent<Image>(out Image image))
         {
@@ -130,20 +130,20 @@ public class UIManager : MonoBehaviour
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
             }
             image.color = backgroundSetting.imageColor;
-        }        
-        
+        }
+
         if (bg.TryGetComponent<RectTransform>(out RectTransform rt))
         {
             rt.pivot = new Vector2(0f, 1f);
             rt.sizeDelta = backgroundSetting.size;
             rt.anchoredPosition = new Vector2(backgroundSetting.position.x, -backgroundSetting.position.y);
-        }       
-        
+        }
+
         return bg;
     }
 
     /// <summary>
-    /// ÅØ½ºÆ® »ı¼º
+    /// í…ìŠ¤íŠ¸ ìƒì„±
     /// </summary>
     private void CreateTexts(TextSetting[] settings, GameObject parent)
     {
@@ -160,19 +160,19 @@ public class UIManager : MonoBehaviour
                 uiText.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
                 uiText.fontSize = setting.fontSize;
                 uiText.color = setting.fontColor;
-                uiText.alignment = TextAlignmentOptions.Center; // Áß¾Ó Á¤·Ä
-            }            
+                uiText.alignment = TextAlignmentOptions.Center; // ì¤‘ì•™ ì •ë ¬
+            }
 
             if (go.TryGetComponent<RectTransform>(out RectTransform rt))
             {
                 rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
                 rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
-            }           
+            }
         }
     }
 
     /// <summary>
-    /// ÀÌ¹ÌÁö »ı¼º
+    /// ì´ë¯¸ì§€ ìƒì„±
     /// </summary>
     private void CreateImages(ImageSetting[] settings, GameObject parent)
     {
@@ -192,18 +192,18 @@ public class UIManager : MonoBehaviour
                 }
                 image.color = setting.imageColor;
                 image.type = (Image.Type)setting.imageType;
-            }           
+            }
 
             if (go.TryGetComponent<RectTransform>(out RectTransform rt))
             {
                 rt.sizeDelta = setting.size;
                 rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-            }            
+            }
         }
     }
 
     /// <summary>
-    /// ¹öÆ° »ı¼º ¹× Å¬¸¯ ÀÌº¥Æ® ¿¬°á
+    /// ë²„íŠ¼ ìƒì„± ë° í´ë¦­ ì´ë²¤íŠ¸ ì—°ê²°
     /// </summary>
     private GameObject CreateButton(ButtonSetting setting, GameObject parent, UnityAction onClickAction)
     {
@@ -214,9 +214,9 @@ public class UIManager : MonoBehaviour
         {
             rt.sizeDelta = setting.buttonSize;
             rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
-        }      
+        }
 
-        // ¹è°æ ÀÌ¹ÌÁö ¼³Á¤
+        // ë°°ê²½ ì´ë¯¸ì§€ ì„¤ì •
         if (go.TryGetComponent<Image>(out Image image) && setting.buttonImage != null)
         {
             Texture2D texture = LoadTexture(setting.buttonImage.imagePath);
@@ -226,11 +226,11 @@ public class UIManager : MonoBehaviour
             }
             image.color = setting.buttonImage.imageColor;
 
-            // ÀÌ¹ÌÁö Å¸ÀÔ ¼³Á¤
+            // ì´ë¯¸ì§€ íƒ€ì… ì„¤ì •
             image.type = (Image.Type)setting.buttonImage.imageType;
-        }       
+        }
 
-        // ÅØ½ºÆ® ¼³Á¤ (ÀÚ½Ä¿¡ TextMeshProUGUI ÄÄÆ÷³ÍÆ®°¡ ÀÖ´Ù°í °¡Á¤)
+        // í…ìŠ¤íŠ¸ ì„¤ì • (ìì‹ì— TextMeshProUGUI ì»´í¬ë„ŒíŠ¸ê°€ ìˆë‹¤ê³  ê°€ì •)
         TextMeshProUGUI text = go.GetComponentInChildren<TextMeshProUGUI>();
 
         if (text != null && setting.buttonText != null &&
@@ -243,14 +243,14 @@ public class UIManager : MonoBehaviour
             text.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
             text.fontSize = setting.buttonText.fontSize;
             text.color = setting.buttonText.fontColor;
-            
+
             if (text.TryGetComponent<RectTransform>(out RectTransform textRT))
             {
                 textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
-            }            
+            }
         }
 
-        // ¹öÆ° Å¬¸¯ ÀÌº¥Æ®
+        // ë²„íŠ¼ í´ë¦­ ì´ë²¤íŠ¸
         if (go.TryGetComponent<Button>(out Button button) && onClickAction != null)
         {
             string soundKey = setting.buttonSound;
@@ -260,42 +260,42 @@ public class UIManager : MonoBehaviour
                 PlayClickSound(soundKey);
                 onClickAction?.Invoke();
             });
-        }        
+        }
 
         return go;
     }
 
     /// <summary>
-    /// °ÔÀÓ ½ÃÀÛ ¾È³» ÆË¾÷À» »ı¼ºÇÕ´Ï´Ù.
-    /// Ãâ¹ß ¹öÆ° Å¬¸¯ ½Ã ÀÎº¥Åä¸®¿Í »çÁø ¹öÆ°µéÀ» »ı¼ºÇÕ´Ï´Ù.
+    /// ê²Œì„ ì‹œì‘ ì•ˆë‚´ íŒì—…ì„ ìƒì„±í•©ë‹ˆë‹¤.
+    /// ì¶œë°œ ë²„íŠ¼ í´ë¦­ ì‹œ ì¸ë²¤í† ë¦¬ì™€ ì‚¬ì§„ ë²„íŠ¼ë“¤ì„ ìƒì„±í•©ë‹ˆë‹¤.
     /// </summary>
     private void CreateStartPopup()
     {
-        // °ÔÀÓ ½ÃÀÛ ÆË¾÷ ¼³Á¤ ºÒ·¯¿À±â
+        // ê²Œì„ ì‹œì‘ íŒì—… ì„¤ì • ë¶ˆëŸ¬ì˜¤ê¸°
         PopupSetting setting = JsonLoader.Instance.Settings.game1Setting.popupSetting;
 
-        // ÆË¾÷ »ı¼º (´İ±â ÀÌº¥Æ® Æ÷ÇÔ)
+        // íŒì—… ìƒì„± (ë‹«ê¸° ì´ë²¤íŠ¸ í¬í•¨)
         CreatePopup(setting, gameBackground, () =>
         {
-            // ÆË¾÷ ´İÈù ÈÄ ´ÙÀ½ ´Ü°è ½ÇÇà
+            // íŒì—… ë‹«íŒ í›„ ë‹¤ìŒ ë‹¨ê³„ ì‹¤í–‰
             StartCoroutine(AfterCloseStartPopup(gameBackground));
         });
     }
 
     /// <summary>
-    /// ½ºÅ¸Æ® ÆË¾÷ Ã¢ÀÌ ´İÈù ÈÄ ÀÎº¥Åä¸®, °ÔÀÓ ¹öÆ° »ı¼º ¹× ÀÌº¥Æ® ¿¬°á
+    /// ìŠ¤íƒ€íŠ¸ íŒì—… ì°½ì´ ë‹«íŒ í›„ ì¸ë²¤í† ë¦¬, ê²Œì„ ë²„íŠ¼ ìƒì„± ë° ì´ë²¤íŠ¸ ì—°ê²°
     /// </summary>
-    /// <param name="parent">ÀÎº¥Åä¸® ¹× °ÔÀÓ ¹öÆ°ÀÌ ºÙ´Â °ÔÀÓ Äµ¹ö½ºÀÇ ¹è°æ ÀÌ¹ÌÁö</param>
+    /// <param name="parent">ì¸ë²¤í† ë¦¬ ë° ê²Œì„ ë²„íŠ¼ì´ ë¶™ëŠ” ê²Œì„ ìº”ë²„ìŠ¤ì˜ ë°°ê²½ ì´ë¯¸ì§€</param>
     /// <returns></returns>
     private IEnumerator AfterCloseStartPopup(GameObject parent)
     {
-        // 1 ÇÁ·¹ÀÓ ±â´Ù·È´Ù°¡ ½ÇÇà (SetActive ÀÌÈÄ ¾ÈÁ¤ÀûÀ¸·Î Ã³¸®)
+        // 1 í”„ë ˆì„ ê¸°ë‹¤ë ¸ë‹¤ê°€ ì‹¤í–‰ (SetActive ì´í›„ ì•ˆì •ì ìœ¼ë¡œ ì²˜ë¦¬)
         yield return null;
 
         Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
-        CreateInventory(game1Setting.inventorySetting, parent); // ÀÎº¥Åä¸® »ı¼º
+        CreateInventory(game1Setting.inventorySetting, parent); // ì¸ë²¤í† ë¦¬ ìƒì„±
 
-        // Æ÷Åä ¹öÆ° »ı¼º ¹× ÀÌº¥Æ® ¿¬°á
+        // í¬í†  ë²„íŠ¼ ìƒì„± ë° ì´ë²¤íŠ¸ ì—°ê²°
         for (int i = 0; i < game1Setting.photoButtons.Length; i++)
         {
             GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
@@ -310,11 +310,11 @@ public class UIManager : MonoBehaviour
                     if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
                     {
                         PlayClickSound(soundKey);
-                        itemImage.material = null;  // ¿¬°áµÈ ¾ÆÀÌÅÛ ÀÌ¹ÌÁöÀÇ »ö º¹¿ø
+                        itemImage.material = null;  // ì—°ê²°ëœ ì•„ì´í…œ ì´ë¯¸ì§€ì˜ ìƒ‰ ë³µì›
                         itemFoundCount++;
 
                         btn.gameObject.SetActive(false);
-                        CreateExplainPopup(index); // ¼³¸í ÆË¾÷ »ı¼º
+                        CreateExplainPopup(index); // ì„¤ëª… íŒì—… ìƒì„±
                     }
                 });
             }
@@ -322,22 +322,22 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¼³¸í ÆË¾÷À» »ı¼ºÇÕ´Ï´Ù. ÀÎµ¦½º¿¡ µû¶ó ÇØ´ç ¼³¸í ³»¿ëÀ» ·ÎµåÇÕ´Ï´Ù.
-    /// ´İ±â ¹öÆ° Å¬¸¯ ½Ã ¸ğµç ¾ÆÀÌÅÛÀ» Ã£¾Ò´Ù¸é ¿£µù ÆË¾÷À¸·Î ³Ñ¾î°©´Ï´Ù.
+    /// ì„¤ëª… íŒì—…ì„ ìƒì„±í•©ë‹ˆë‹¤. ì¸ë±ìŠ¤ì— ë”°ë¼ í•´ë‹¹ ì„¤ëª… ë‚´ìš©ì„ ë¡œë“œí•©ë‹ˆë‹¤.
+    /// ë‹«ê¸° ë²„íŠ¼ í´ë¦­ ì‹œ ëª¨ë“  ì•„ì´í…œì„ ì°¾ì•˜ë‹¤ë©´ ì—”ë”© íŒì—…ìœ¼ë¡œ ë„˜ì–´ê°‘ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="index">ÇØ´ç Æ÷Åä ¹öÆ° ÀÎµ¦½º</param>
+    /// <param name="index">í•´ë‹¹ í¬í†  ë²„íŠ¼ ì¸ë±ìŠ¤</param>
     private void CreateExplainPopup(int index)
     {
         var explainSettings = JsonLoader.Instance.Settings.explainPopupSetting;
         if (index < 0 || index >= explainSettings.Length)
         {
-            Debug.LogWarning($"Àß¸øµÈ ÀÎµ¦½º: {index}");
+            Debug.LogWarning($"ì˜ëª»ëœ ì¸ë±ìŠ¤: {index}");
             return;
         }
 
         CreatePopup(explainSettings[index], gameBackground, () =>
         {
-            // ¼³¸í ÆË¾÷ ´İ±â ½Ã ¾ÆÀÌÅÛ ¼ö Ã¼Å©
+            // ì„¤ëª… íŒì—… ë‹«ê¸° ì‹œ ì•„ì´í…œ ìˆ˜ ì²´í¬
             if (itemFoundCount == JsonLoader.Instance.Settings.game1Setting.photoButtons.Length)
             {
                 CreateGameEndPopup();
@@ -346,7 +346,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÔÀÓ Á¾·á ÆË¾÷À» »ı¼ºÇÏ°í ÀÎº¥Åä¸® À§Ä¡¸¦ Áß¾ÓÀ¸·Î ÀÌµ¿½ÃÅµ´Ï´Ù.
+    /// ê²Œì„ ì¢…ë£Œ íŒì—…ì„ ìƒì„±í•˜ê³  ì¸ë²¤í† ë¦¬ ìœ„ì¹˜ë¥¼ ì¤‘ì•™ìœ¼ë¡œ ì´ë™ì‹œí‚µë‹ˆë‹¤.
     /// </summary>
     private void CreateGameEndPopup()
     {
@@ -356,7 +356,7 @@ public class UIManager : MonoBehaviour
         CreatePopup(setting, gameBackground, () =>
         {
             PlayClickSound(soundKey);
-            inventory.SetActive(false);            
+            inventory.SetActive(false);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         });
 
@@ -366,7 +366,7 @@ public class UIManager : MonoBehaviour
             invRT.pivot = new Vector2(0.5f, 0.5f);
             invRT.anchoredPosition = new(JsonLoader.Instance.Settings.gameEndInventoryPosition.x, -JsonLoader.Instance.Settings.gameEndInventoryPosition.y);
 
-            // ÆË¾÷º¸´Ù ÀÎº¥Åä¸®¸¦ À§·Î ÀÌµ¿
+            // íŒì—…ë³´ë‹¤ ì¸ë²¤í† ë¦¬ë¥¼ ìœ„ë¡œ ì´ë™
             inventory.transform.SetAsLastSibling();
         }
     }
@@ -382,21 +382,21 @@ public class UIManager : MonoBehaviour
         CreateButton(setting.popupButton, popupBG, () =>
         {
             popupBG.SetActive(false);
-            onClose?.Invoke(); // ´İ±â ÈÄ ½ÇÇà
+            onClose?.Invoke(); // ë‹«ê¸° í›„ ì‹¤í–‰
         });
 
-        // ÆË¾÷À» UI ÃÖ»ó´ÜÀ¸·Î ÀÌµ¿
+        // íŒì—…ì„ UI ìµœìƒë‹¨ìœ¼ë¡œ ì´ë™
         popupBG.transform.SetAsLastSibling();
     }
 
     private void CreateInventory(InventorySetting setting, GameObject parent)
     {
-        // ¹è°æ ÀÌ¹ÌÁö »ı¼º
+        // ë°°ê²½ ì´ë¯¸ì§€ ìƒì„±
         GameObject bg = Instantiate(imagePrefab, parent.transform);
         bg.name = setting.inventoryBackgroundImage.name;
         inventory = bg;
 
-        if(bg.TryGetComponent<Image>(out Image image))
+        if (bg.TryGetComponent<Image>(out Image image))
         {
             Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
             if (texture)
@@ -405,27 +405,27 @@ public class UIManager : MonoBehaviour
             }
             image.color = setting.inventoryBackgroundImage.imageColor;
             image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
-        }       
+        }
 
         if (bg.TryGetComponent<RectTransform>(out RectTransform bgRT))
         {
             bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
             bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
-        }       
+        }
 
         CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows, setting.itemPadding);
     }
 
     private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows, float padding)
     {
-        itemIcons.Clear(); // »õ·Î »ı¼º ½Ã ÃÊ±âÈ­
+        itemIcons.Clear(); // ìƒˆë¡œ ìƒì„± ì‹œ ì´ˆê¸°í™”
 
         Vector2 cellSize = new Vector2(
             (parentRT.sizeDelta.x - padding * (columns + 1)) / columns,
             (parentRT.sizeDelta.y - padding * (rows + 1)) / rows
         );
 
-        // Column, Row¿¡ ¸ÂÃç ¾ÆÀÌÅÛ ÀÌ¹ÌÁö Á¤·Ä
+        // Column, Rowì— ë§ì¶° ì•„ì´í…œ ì´ë¯¸ì§€ ì •ë ¬
         for (int i = 0; i < settings.Length && i < columns * rows; i++)
         {
             int row = i / columns;
@@ -452,15 +452,15 @@ public class UIManager : MonoBehaviour
                 Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale"); // Resources/Materials/Grayscale.mat
                 img.material = grayscaleMat;
             }
-            
+
             if (itemGO.TryGetComponent<RectTransform>(out RectTransform itemRT))
             {
                 itemRT.sizeDelta = cellSize;
                 itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
                 itemRT.pivot = new Vector2(0.5f, 0.5f);
                 itemRT.anchoredPosition = anchoredPos;
-            }          
-           
+            }
+
             itemIcons[$"Item_{i}"] = img;
         }
     }
@@ -468,7 +468,7 @@ public class UIManager : MonoBehaviour
 
     #region Utils
     /// <summary>
-    /// Path·ÎºÎÅÍ ÀÌ¹ÌÁö¸¦ ÀĞ°í ÅØ½ºÃÄ·Î º¯È¯
+    /// Pathë¡œë¶€í„° ì´ë¯¸ì§€ë¥¼ ì½ê³  í…ìŠ¤ì³ë¡œ ë³€í™˜
     /// </summary>
     /// <param name="relativePath"></param>
     /// <returns></returns>
@@ -484,29 +484,29 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// JSONÀÇ font Å°°ª(font1, font2 µî)À» ½ÇÁ¦ ÆùÆ® ÆÄÀÏ ÀÌ¸§À¸·Î ¸ÅÇÎÇÕ´Ï´Ù.
-    /// FontMapping Å¬·¡½ºÀÇ ÇÊµå¸íÀ» ¸®ÇÃ·º¼ÇÀ¸·Î Ã£¾Æ ¹İÈ¯ÇÕ´Ï´Ù.
+    /// JSONì˜ font í‚¤ê°’(font1, font2 ë“±)ì„ ì‹¤ì œ í°íŠ¸ íŒŒì¼ ì´ë¦„ìœ¼ë¡œ ë§¤í•‘í•©ë‹ˆë‹¤.
+    /// FontMapping í´ë˜ìŠ¤ì˜ í•„ë“œëª…ì„ ë¦¬í”Œë ‰ì…˜ìœ¼ë¡œ ì°¾ì•„ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="key">JSON ³»¿¡ ¸í½ÃµÈ font Å° (¿¹: "font1")</param>
-    /// <returns>½ÇÁ¦ ÆùÆ® ¸®¼Ò½º ÆÄÀÏ ÀÌ¸§ (¿¹: "NanumGothic-Regular SDF")</returns>
+    /// <param name="key">JSON ë‚´ì— ëª…ì‹œëœ font í‚¤ (ì˜ˆ: "font1")</param>
+    /// <returns>ì‹¤ì œ í°íŠ¸ ë¦¬ì†ŒìŠ¤ íŒŒì¼ ì´ë¦„ (ì˜ˆ: "NanumGothic-Regular SDF")</returns>
     private string ResolveFont(string key)
     {
         FontMapping fontMap = JsonLoader.Instance.Settings.fontMap;
         if (fontMap == null) return key;
 
-        // ¸®ÇÃ·º¼ÇÀ» ÅëÇØ key¿¡ ÇØ´çÇÏ´Â ÇÊµå Á¤º¸¸¦ ¾òÀ½
+        // ë¦¬í”Œë ‰ì…˜ì„ í†µí•´ keyì— í•´ë‹¹í•˜ëŠ” í•„ë“œ ì •ë³´ë¥¼ ì–»ìŒ
         var field = typeof(FontMapping).GetField(key);
         if (field != null)
         {
-            return field.GetValue(fontMap) as string ?? key; // ½ÇÁ¦ ÆùÆ® ÀÌ¸§ ¹İÈ¯
+            return field.GetValue(fontMap) as string ?? key; // ì‹¤ì œ í°íŠ¸ ì´ë¦„ ë°˜í™˜
         }
 
-        return key; // ¸ÅÇÎ ½ÇÆĞ ½Ã ¿ø·¡ key ¹İÈ¯
+        return key; // ë§¤í•‘ ì‹¤íŒ¨ ì‹œ ì›ë˜ key ë°˜í™˜
     }
 
     /// <summary>
-    /// JSON¿¡ Á¤ÀÇµÈ »ç¿îµå ¸ñ·ÏÀ» StreamingAssets/Audio °æ·Î¿¡¼­ ·ÎµåÇÏ¿© soundMap¿¡ ÀúÀåÇÕ´Ï´Ù.
-    /// °¢ »ç¿îµå´Â key-clip ½ÖÀ¸·Î ÀúÀåµÇ¸ç, Àç»ı ½Ã key·Î ÂüÁ¶ÇÕ´Ï´Ù.
+    /// JSONì— ì •ì˜ëœ ì‚¬ìš´ë“œ ëª©ë¡ì„ StreamingAssets/Audio ê²½ë¡œì—ì„œ ë¡œë“œí•˜ì—¬ soundMapì— ì €ì¥í•©ë‹ˆë‹¤.
+    /// ê° ì‚¬ìš´ë“œëŠ” key-clip ìŒìœ¼ë¡œ ì €ì¥ë˜ë©°, ì¬ìƒ ì‹œ keyë¡œ ì°¸ì¡°í•©ë‹ˆë‹¤.
     /// </summary>
     private IEnumerator LoadSoundsFromSettings()
     {
@@ -517,38 +517,38 @@ public class UIManager : MonoBehaviour
 
         foreach (SoundSetting entry in soundEntries)
         {
-            // ÀüÃ¼ ÆÄÀÏ °æ·Î ±¸¼º
+            // ì „ì²´ íŒŒì¼ ê²½ë¡œ êµ¬ì„±
             string fullPath = Path.Combine(Application.streamingAssetsPath, "Audio", entry.clipPath).Replace("\\", "/");
 
-            // ÆÄÀÏ¿¡¼­ ¿Àµğ¿À Å¬¸³ ·Îµå (WAV ÆÄÀÏ ±âÁØ)
+            // íŒŒì¼ì—ì„œ ì˜¤ë””ì˜¤ í´ë¦½ ë¡œë“œ (WAV íŒŒì¼ ê¸°ì¤€)
             UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + fullPath, AudioType.WAV);
             yield return www.SendWebRequest();
 
             if (www.result == UnityWebRequest.Result.Success)
             {
-                // ¼º°øÀûÀ¸·Î ·ÎµåµÇ¸é Dictionary¿¡ ÀúÀå
+                // ì„±ê³µì ìœ¼ë¡œ ë¡œë“œë˜ë©´ Dictionaryì— ì €ì¥
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-                soundMap[entry.key] = clip; // ¿Àµğ¿À Å¬¸³ ÀúÀå
-                soundVolumeMap[entry.key] = entry.volume;   // º¼·ı ÀúÀå
+                soundMap[entry.key] = clip; // ì˜¤ë””ì˜¤ í´ë¦½ ì €ì¥
+                soundVolumeMap[entry.key] = entry.volume;   // ë³¼ë¥¨ ì €ì¥
             }
             else
             {
-                Debug.LogWarning($"[SoundLoader] ½ÇÆĞ: {entry.clipPath} - {www.error}");
+                Debug.LogWarning($"[SoundLoader] ì‹¤íŒ¨: {entry.clipPath} - {www.error}");
             }
         }
     }
 
     /// <summary>
-    /// ÁöÁ¤µÈ »ç¿îµå Å°¿¡ ÇØ´çÇÏ´Â AudioClipÀ» Ã£¾Æ Àç»ıÇÕ´Ï´Ù.
-    /// »ç¿îµå´Â UI ¹öÆ° Å¬¸¯ ½Ã »ç¿ëµË´Ï´Ù.
+    /// ì§€ì •ëœ ì‚¬ìš´ë“œ í‚¤ì— í•´ë‹¹í•˜ëŠ” AudioClipì„ ì°¾ì•„ ì¬ìƒí•©ë‹ˆë‹¤.
+    /// ì‚¬ìš´ë“œëŠ” UI ë²„íŠ¼ í´ë¦­ ì‹œ ì‚¬ìš©ë©ë‹ˆë‹¤.
     /// </summary>
-    /// <param name="key">JSON¿¡ µî·ÏµÈ »ç¿îµå Å° (¿¹: "click1")</param>
+    /// <param name="key">JSONì— ë“±ë¡ëœ ì‚¬ìš´ë“œ í‚¤ (ì˜ˆ: "click1")</param>
     private void PlayClickSound(string key)
     {
-        // AudioSource°¡ ÀÖ°í, ÇØ´ç key¿¡ ´ëÇÑ clipÀÌ ÀÖÀ¸¸é Àç»ı
+        // AudioSourceê°€ ìˆê³ , í•´ë‹¹ keyì— ëŒ€í•œ clipì´ ìˆìœ¼ë©´ ì¬ìƒ
         if (uiAudioSource != null && soundMap.TryGetValue(key, out AudioClip clip))
         {
-            // Å°¿¡ ÇØ´çÇÏ´Â º¼·ı ¾øÀ¸¸é ±âº»°ª 1.0 »ç¿ë
+            // í‚¤ì— í•´ë‹¹í•˜ëŠ” ë³¼ë¥¨ ì—†ìœ¼ë©´ ê¸°ë³¸ê°’ 1.0 ì‚¬ìš©
             float volume = soundVolumeMap.TryGetValue(key, out float v) ? v : 1.0f;
             uiAudioSource.PlayOneShot(clip);
         }

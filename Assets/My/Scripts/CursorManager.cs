@@ -1,15 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// ¸¶¿ì½º Ä¿¼­¸¦ Á¦¾îÇÏ¸ç, ¾ÀÀÌ ¹Ù²î¾îµµ Ä¿¼­°¡ À¯ÁöµÇµµ·Ï °ü¸®ÇÏ´Â Å¬·¡½º
+///  ë§ˆìš°ìŠ¤ ì»¤ì„œë¥¼ ì œì–´í•˜ë©°, ì”¬ì´ ë°”ë€Œì–´ë„ ì»¤ì„œê°€ ìœ ì§€ë˜ë„ë¡ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
 /// </summary>
 public class CursorManager : MonoBehaviour
 {
     public static CursorManager Instance { get; private set; }
 
-    [SerializeField] private Texture2D cursorTexture; // Ä¿¼­·Î »ç¿ëÇÒ ÅØ½ºÃ³
-    private Vector2 hotspot;    // Ä¿¼­ÀÇ ±âÁØ ÁöÁ¡
-
+    [SerializeField] private Texture2D cursorTexture; // ì»¤ì„œë¡œ ì‚¬ìš©í•  í…ìŠ¤ì²˜
+    private Vector2 hotspot;    // ì»¤ì„œì˜ ê¸°ì¤€ ì§€ì 
     private void Awake()
     {
         if (Instance == null)
@@ -37,15 +36,6 @@ public class CursorManager : MonoBehaviour
         {
             //Debug.Log($"Cursor texture: {cursorTexture.name}, Size: {cursorTexture.width}x{cursorTexture.height}");
             Cursor.SetCursor(cursorTexture, new Vector2(cursorTexture.width / 2, cursorTexture.height / 2), CursorMode.ForceSoftware);
-        }
-    }
-
-    private void Update()
-    {
-        // Ä¿¼­°¡ ºñÈ°¼ºÈ­µÇ¾úÀ» °æ¿ì ´Ù½Ã º¸ÀÌ°Ô ¼³Á¤
-        if (Cursor.visible == false)
-        {
-            Cursor.visible = true;
         }
     }
 }

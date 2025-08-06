@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Æ¯Á¤À§Ä¡ È­¸é ÅÍÄ¡½Ã °ÔÀÓ Á¾·á
+// íŠ¹ì •ìœ„ì¹˜ í™”ë©´ í„°ì¹˜ì‹œ ê²Œì„ ì¢…ë£Œ
 public class GameCloser : MonoBehaviour
 {
     [SerializeField] private RectTransform rectTransform;
@@ -38,7 +38,7 @@ public class GameCloser : MonoBehaviour
     }
 
     /// <summary>
-    /// Å¬¸¯ ½Ã È£ÃâµÇ¾î Å¬¸¯ È½¼ö¸¦ Áõ°¡½ÃÅµ´Ï´Ù.
+    /// í´ë¦­ ì‹œ í˜¸ì¶œë˜ì–´ í´ë¦­ íšŸìˆ˜ë¥¼ ì¦ê°€ì‹œí‚µë‹ˆë‹¤.
     /// </summary>
     public void Click()
     {

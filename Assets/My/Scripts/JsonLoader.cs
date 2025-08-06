@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class JsonLoader : MonoBehaviour
@@ -25,7 +24,7 @@ public class JsonLoader : MonoBehaviour
         if (_instance == null)
         {
             _instance = this;
-            DontDestroyOnLoad(gameObject); // ÀÎ½ºÅÏ½º À¯Áö
+            DontDestroyOnLoad(gameObject);
         }
         else if (_instance != this)
         {
@@ -48,12 +47,12 @@ public class JsonLoader : MonoBehaviour
 
         if (!File.Exists(filePath))
         {
-            Debug.LogWarning("[JsonLoader] ÆÄÀÏÀÌ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù: " + filePath);
+            Debug.LogWarning("[JsonLoader] File is not exits: " + filePath);
             return default;
         }
 
         string json = File.ReadAllText(filePath);
-        Debug.Log("[JsonLoader] JSON ·Îµå ¿Ï·á: " + json);
+        Debug.Log("[JsonLoader] JSON load complete: " + json);
 
         return JsonUtility.FromJson<T>(json);
     }
@@ -200,7 +199,7 @@ public class Game1Setting
 [Serializable]
 public class Settings
 {
-    public float inactivityTime; // ÀÔ·ÂÀÌ ¾øÀ» ½Ã Å¸ÀÌÆ²·Î µÇµ¹¾Æ°¡´Â ½Ã°£
+    public float inactivityTime; // ì…ë ¥ì´ ì—†ì„ ì‹œ íƒ€ì´í‹€ë¡œ ë˜ëŒì•„ê°€ëŠ” ì‹œê°„
     public FontMapping fontMap;
     public SoundSetting[] sounds;
     public CloseSetting closeSetting;
