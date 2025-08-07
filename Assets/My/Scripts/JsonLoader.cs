@@ -200,6 +200,7 @@ public class Game1Setting
 public class Settings
 {
     public float inactivityTime; // 입력이 없을 시 타이틀로 되돌아가는 시간
+    public float fadeTime; // 페이드 시간
     public FontMapping fontMap;
     public SoundSetting[] sounds;
     public CloseSetting closeSetting;

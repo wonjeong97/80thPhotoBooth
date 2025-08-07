@@ -1,5 +1,6 @@
 {
   "inactivityTime": 60.0,
+  "fadeTime": 1.0,
   "fontMap": {
     "font1": "BlackHanSans-Regular SDF",
     "font2": "NanumGothic-Regular SDF"

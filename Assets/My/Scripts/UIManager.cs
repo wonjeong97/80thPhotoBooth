@@ -15,10 +15,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("UI Canvas")]
-    [SerializeField] private Transform titleCanvas;     // 타이틀 캔버스
-    [SerializeField] private Transform gameCanvas;      // 게임 캔버스
-
     [Header("UI 프리팹")]
     [SerializeField] private GameObject buttonPrefab;   // 동적 생성 버튼 프리팹
     [SerializeField] private GameObject textPrefab;     // 동적 생성 텍스트 프리팹
@@ -31,7 +27,13 @@ public class UIManager : MonoBehaviour
 
     private float inactivityTimer;
     private float inactivityThreshold = 60f; // 입력이 없는 경우 타이틀로 되돌아가는 시간
+    private float fadeTime = 1f; // 페이드 시간
 
+    private Transform titleCanvas;
+    private Transform gameCanvas;
+
+    private GameObject titleCanvasInstance;
+    private GameObject gameCanvasInstance;
     private GameObject gameBackground;       // 게임 캔버스 백그라운드 이미지
     private GameObject inventory;            // 인벤토리 오브젝트
 
@@ -41,22 +43,41 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }        
 
         StartCoroutine(LoadSoundsFromSettings()); // 사운드 로딩
     }
 
     private void Start()
     {
-        CreateTitle();  // 타이틀 이미지 생성
-
-        if (JsonLoader.Instance.Settings != null)
+        if (JsonLoader.Instance.Settings == null)
         {
-            // JSON 세팅에서 미입력시간을 받아옴
-            inactivityThreshold = JsonLoader.Instance.Settings.inactivityTime;
+            Debug.LogError("[UIManager] Settings are not loaded yet.");
+            return;
         }
+
+        inactivityThreshold = JsonLoader.Instance.Settings.inactivityTime;
+        fadeTime = JsonLoader.Instance.Settings.fadeTime;
     }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        InitializeUI();
+        FadeManager.Instance?.FadeIn(fadeTime);
+    }
+
+    private void OnDestroy() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
     private void Update()
     {
@@ -80,6 +101,39 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
+    /// UI 초기화: 타이틀과 게임 캔버스 생성 및 설정
+    /// </summary>
+    private void InitializeUI()
+    {
+        // 기존 캔버스 제거 (씬 전환 시 메모리 해제)
+        if (titleCanvasInstance != null) Destroy(titleCanvasInstance);
+        if (gameCanvasInstance != null) Destroy(gameCanvasInstance);
+
+        // 프리팹 로드
+        GameObject titlePrefab = Resources.Load<GameObject>("Prefabs/TitleCanvas");
+        GameObject gamePrefab = Resources.Load<GameObject>("Prefabs/GameCanvas");
+
+        if (titlePrefab == null || gamePrefab == null)
+        {
+            Debug.LogError("[UIManager] Canvas prefabs loading failed.");
+            return;
+        }
+
+        // Instantiate
+        titleCanvasInstance = Instantiate(titlePrefab);
+        gameCanvasInstance = Instantiate(gamePrefab);
+
+        titleCanvas = titleCanvasInstance.transform;
+        gameCanvas = gameCanvasInstance.transform;
+
+        // 초기 상태: 타이틀 켜기, 게임 꺼두기
+        titleCanvas.gameObject.SetActive(true);
+        gameCanvas.gameObject.SetActive(false);
+
+        CreateTitle(); // 타이틀 화면 구성
+    }
+
+    /// <summary>
     /// 타이틀 화면 구성
     /// </summary>
     private void CreateTitle()
@@ -94,9 +148,13 @@ public class UIManager : MonoBehaviour
 
             if (titleCanvas != null && titleCanvas.gameObject.activeInHierarchy)
             {
-                titleCanvas.gameObject.SetActive(false);
-                gameCanvas.gameObject.SetActive(true);
-                CreateGameUI();
+                FadeManager.Instance?.FadeOut(fadeTime, () =>
+                {
+                    titleCanvas.gameObject.SetActive(false);
+                    gameCanvas.gameObject.SetActive(true);
+                    CreateGameUI();
+                    FadeManager.Instance?.FadeIn(fadeTime);
+                });
             }
         });
     }
@@ -357,7 +415,10 @@ public class UIManager : MonoBehaviour
         {
             PlayClickSound(soundKey);
             inventory.SetActive(false);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            FadeManager.Instance?.FadeOut(fadeTime, () =>
+            { 
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            });            
         });
 
         if (inventory != null)
