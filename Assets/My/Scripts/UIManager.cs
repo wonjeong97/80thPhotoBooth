@@ -46,7 +46,7 @@ public class UIManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -275,17 +275,44 @@ public class UIManager : MonoBehaviour
         }
 
         // 배경 이미지 설정
-        if (go.TryGetComponent<Image>(out Image image) && setting.buttonImage != null)
+        if (go.TryGetComponent<Image>(out Image image) && setting.buttonBackgroundImage != null)
         {
-            Texture2D texture = LoadTexture(setting.buttonImage.imagePath);
+            Texture2D texture = LoadTexture(setting.buttonBackgroundImage.imagePath);
             if (texture)
             {
                 image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
             }
-            image.color = setting.buttonImage.imageColor;
+            image.color = setting.buttonBackgroundImage.imageColor;
 
             // 이미지 타입 설정
-            image.type = (Image.Type)setting.buttonImage.imageType;
+            image.type = (Image.Type)setting.buttonBackgroundImage.imageType;
+        }
+
+        // 에디셔널 이미지 설정
+        if (setting.buttonAdditionalImage != null)
+        {
+            GameObject additionalImageGO = Instantiate(imagePrefab, go.transform);
+            additionalImageGO.name = setting.buttonAdditionalImage.name;
+
+            if (additionalImageGO.TryGetComponent<Image>(out Image addImg))
+            {
+                Texture2D texture = LoadTexture(setting.buttonAdditionalImage.imagePath);
+                if (texture)
+                {
+                    addImg.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                }
+                addImg.color = setting.buttonAdditionalImage.imageColor;
+                addImg.type = (Image.Type)setting.buttonAdditionalImage.imageType;
+            }
+
+            if (additionalImageGO.TryGetComponent<RectTransform>(out RectTransform addRT))
+            {
+                addRT.sizeDelta = setting.buttonAdditionalImage.size;
+                addRT.anchoredPosition = new Vector2(setting.buttonAdditionalImage.position.x, -setting.buttonAdditionalImage.position.y);
+                addRT.anchorMin = new Vector2(0.0f, 1.0f); // 좌상단
+                addRT.anchorMax = new Vector2(0.0f, 1.0f);
+                addRT.pivot = new Vector2(0.5f, 0.5f);
+            }
         }
 
         // 텍스트 설정 (자식에 TextMeshProUGUI 컴포넌트가 있다고 가정)
@@ -301,9 +328,11 @@ public class UIManager : MonoBehaviour
             text.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
             text.fontSize = setting.buttonText.fontSize;
             text.color = setting.buttonText.fontColor;
+          
 
             if (text.TryGetComponent<RectTransform>(out RectTransform textRT))
             {
+                textRT.anchoredPosition = new Vector2(setting.buttonText.position.x, setting.buttonText.position.y);
                 textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
             }
         }
@@ -377,6 +406,11 @@ public class UIManager : MonoBehaviour
                 });
             }
         }
+
+        GameObject goTitleButton = CreateButton(game1Setting.goTitleButton, parent, () => 
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        });
     }
 
     /// <summary>
@@ -413,7 +447,6 @@ public class UIManager : MonoBehaviour
 
         CreatePopup(setting, gameBackground, () =>
         {
-            PlayClickSound(soundKey);
             inventory.SetActive(false);
             FadeManager.Instance?.FadeOut(fadeTime, () =>
             { 
@@ -474,55 +507,44 @@ public class UIManager : MonoBehaviour
             bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
         }
 
-        CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows, setting.itemPadding);
+        CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows);
     }
 
-    private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows, float padding)
+    private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows)
     {
         itemIcons.Clear(); // 새로 생성 시 초기화
+        int i = 0;
 
-        Vector2 cellSize = new Vector2(
-            (parentRT.sizeDelta.x - padding * (columns + 1)) / columns,
-            (parentRT.sizeDelta.y - padding * (rows + 1)) / rows
-        );
-
-        // Column, Row에 맞춰 아이템 이미지 정렬
-        for (int i = 0; i < settings.Length && i < columns * rows; i++)
+        foreach (var setting in settings)
         {
-            int row = i / columns;
-            int col = i % columns;
-
-            float x = -parentRT.sizeDelta.x / 2 + padding + col * (cellSize.x + padding) + cellSize.x / 2;
-            float y = parentRT.sizeDelta.y / 2 - padding - row * (cellSize.y + padding) - cellSize.y / 2;
-
-            Vector2 anchoredPos = new Vector2(x, y);
-
             GameObject itemGO = Instantiate(imagePrefab, parentRT);
             itemGO.name = $"Item_{i}";
 
             if (itemGO.TryGetComponent<Image>(out Image img))
             {
-                Texture2D tex = LoadTexture(settings[i].imagePath);
+                Texture2D tex = LoadTexture(setting.imagePath);
                 if (tex)
                 {
                     img.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
                 }
-                img.color = settings[i].imageColor;
-                img.type = (Image.Type)settings[i].imageType;
+                img.color = setting.imageColor;
+                img.type = (Image.Type)setting.imageType;
 
-                Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale"); // Resources/Materials/Grayscale.mat
+                // 회색톤 효과 적용
+                Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale");
                 img.material = grayscaleMat;
             }
 
-            if (itemGO.TryGetComponent<RectTransform>(out RectTransform itemRT))
+            if (itemGO.TryGetComponent<RectTransform>(out RectTransform rt))
             {
-                itemRT.sizeDelta = cellSize;
-                itemRT.anchorMin = itemRT.anchorMax = new Vector2(0.5f, 0.5f);
-                itemRT.pivot = new Vector2(0.5f, 0.5f);
-                itemRT.anchoredPosition = anchoredPos;
+                rt.sizeDelta = setting.size;
+                rt.anchorMin = rt.anchorMax = new Vector2(0.0f, 1.0f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
             }
 
             itemIcons[$"Item_{i}"] = img;
+            i++;
         }
     }
     #endregion
@@ -535,10 +557,19 @@ public class UIManager : MonoBehaviour
     /// <returns></returns>
     private Texture2D LoadTexture(string relativePath)
     {
-        string path = Path.Combine(Application.streamingAssetsPath, relativePath);
-        if (!File.Exists(path)) return null;
+        if (string.IsNullOrEmpty(relativePath))
+        {
+            return null;
+        }
 
-        byte[] fileData = File.ReadAllBytes(path);
+        string fullPath = Path.Combine(Application.streamingAssetsPath, relativePath);
+
+        if (!File.Exists(fullPath))
+        {
+            return null;
+        }
+
+        byte[] fileData = File.ReadAllBytes(fullPath);
         Texture2D texture = new Texture2D(2, 2);
         texture.LoadImage(fileData);
         return texture;
@@ -615,4 +646,4 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion
-}
+}  

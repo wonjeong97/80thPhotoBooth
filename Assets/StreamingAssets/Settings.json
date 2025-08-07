@@ -1,8 +1,8 @@
 {
-  "inactivityTime": 60.0,
+  "inactivityTime": 9990.0,
   "fadeTime": 1.0,
   "fontMap": {
-    "font1": "BlackHanSans-Regular SDF",
+    "font1": "DungGeunMo SDF",
     "font2": "NanumGothic-Regular SDF"
   },
   "sounds": [
@@ -18,7 +18,7 @@
   "titleSetting": {
     "backgroundImage": {
       "name": "Image_TitleBackground",
-      "imagePath": "Image/Background/1_background.png",
+      "imagePath": "Image/Background/1_Background.png",
       "position": { "x": 0, "y": 0 },
       "size": { "x": 1920, "y": 1080 },
       "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
@@ -27,7 +27,7 @@
     "texts": [
       {
         "name": "Text_Title",
-        "text": "숨은 <color=#FFFF00>사진</color> 찾기",
+        "text": "",
         "position": { "x": 960, "y": 225 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
@@ -36,7 +36,7 @@
       },
       {
         "name": "Text_SubTitle",
-        "text": "과학관 곳곳에 숨겨진\n사진 속 이야기들을 찾아보자!",
+        "text": "",
         "position": { "x": 960, "y": 445 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
@@ -46,22 +46,29 @@
     ],
     "startButton": {
       "name": "Button_Start",
-      "buttonSize": { "x": 400, "y": 160 },
+      "buttonSize": { "x": 550, "y": 150 },
       "buttonPosition": { "x": 960, "y": 900 },
-      "buttonImage": {
-        "imagePath": "Image/Background/1_background.png",
+      "buttonBackgroundImage": {
+        "imagePath": "Image/Button/1_Button.png",
         "position": { "x": 0, "y": 0 },
         "size": { "x": 10, "y": 10 },
-        "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAdditionalImage": {
+        "imagePath": "Image/Button/1_Cursor.png",
+        "position": { "x": 550, "y": 30 },
+        "size": { "x": 150, "y": 150 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
         "imageType": 0
       },
       "buttonText": {
-        "text": "시작하기",
-        "position": { "x": 0, "y": 0 },
+        "text": "<b>시작하기</b>",
+        "position": { "x": 0, "y": 10 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
-        "fontSize": 70,
-        "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
+        "fontSize": 52,
+        "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
       },
       "buttonSound": "click1"
     }
@@ -79,16 +86,16 @@
       "name": "Popup_1",
       "popupBackgroundImage": {
         "name": "Image_Popup1_Background",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
+        "imagePath": "Image/Background/3_Background.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
         "imageType": 0
       },
       "popupTexts": [
         {
           "name": "Text_PopupText1",
-          "text": "숨은 <color=#FFFF00>사진</color> 찾기",
+          "text": "",
           "position": { "x": 925, "y": 100 },
           "rotationZ": 0.0,
           "fontResourceName": "font1",
@@ -97,7 +104,7 @@
         },
         {
           "name": "Text_PopupText2",
-          "text": "과학관 맵 곳곳에 숨어있는\n사진 카메라를 찾아 인벤토리를 채워주세요!",
+          "text": "",
           "position": { "x": 925, "y": 250 },
           "rotationZ": 0.0,
           "fontResourceName": "font2",
@@ -107,34 +114,58 @@
       ],
       "popupImages": [
         {
-          "name": "Image_Popup1",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 925, "y": 480 },
-          "size": { "x": 450, "y": 300 },
+          "name": "Image_Overlap",
+          "imagePath": "Image/Overlap/1_Overlap.png",
+          "position": { "x": 960, "y": 540 },
+          "size": { "x": 1920, "y": 1080 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Popup",
+          "imagePath": "Image/1_Popup.png",
+          "position": { "x": 960, "y": 460 },
+          "size": { "x": 960, "y": 520 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        }
+        ,
+        {
+          "name": "Image_Camera",
+          "imagePath": "Image/Camera/2_Camera.png",
+          "position": { "x": 960, "y": 380 },
+          "size": { "x": 200, "y": 200 },
           "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
           "imageType": 0
         }
       ],
       "popupButton": {
         "name": "Button_Popup1",
-        "buttonSize": { "x": 300, "y": 140 },
-        "buttonPosition": { "x": 925, "y": 775 },
-        "buttonImage": {
+        "buttonSize": { "x": 550, "y": 150 },
+        "buttonPosition": { "x": 960, "y": 900 },
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Button/1_Button.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAdditionalImage": {
+          "imagePath": "",
+          "position": { "x": 0, "y": 0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
           "name": "Text_Button1",
-          "text": "출발!",
-          "position": { "x": 0.5, "y": 0.5 },
+          "text": "<b>출발!</b>",
+          "position": { "x": 0, "y": 10 },
           "rotationZ": 0.0,
           "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
+          "fontSize": 52,
+          "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
         },
         "buttonSound": "click1"
       }
@@ -142,94 +173,53 @@
     "inventorySetting": {
       "name": "Inventory",
       "columns": 5,
-      "rows": 2,
-      "itemPadding": 30.0,
+      "rows": 1,
       "inventoryBackgroundImage": {
         "name": "Image_InventoryBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 500, "y": 175 },
-        "size": { "x": 950, "y": 300 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.7 },
+        "imagePath": "Image/Inventory/1_Inventory.png",
+        "position": { "x": 345, "y": 190 },
+        "size": { "x": 600, "y": 250 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
         "imageType": 0
       },
       "itemImages": [
         {
           "name": "1_Icon",
           "imagePath": "Image/Item/1_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
+          "position": { "x": 122, "y": 150 },
+          "size": { "x": 65, "y": 65 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         {
           "name": "2_Icon",
           "imagePath": "Image/Item/2_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
+          "position": { "x": 211.1, "y": 150 },
+          "size": { "x": 65, "y": 65 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         {
           "name": "3_Icon",
           "imagePath": "Image/Item/3_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
+          "position": { "x": 299.5, "y": 150 },
+          "size": { "x": 65, "y": 65 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         {
           "name": "4_Icon",
           "imagePath": "Image/Item/4_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
+          "position": { "x": 387.6, "y": 150 },
+          "size": { "x": 65, "y": 65 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         {
           "name": "5_Icon",
           "imagePath": "Image/Item/5_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        {
-          "name": "6_Icon",
-          "imagePath": "Image/Item/6_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        {
-          "name": "7_Icon",
-          "imagePath": "Image/Item/7_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        {
-          "name": "8_Icon",
-          "imagePath": "Image/Item/8_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        {
-          "name": "9_Icon",
-          "imagePath": "Image/Item/9_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        {
-          "name": "10_Icon",
-          "imagePath": "Image/Item/10_Icon.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 100, "y": 100 },
+          "position": { "x": 476, "y": 150 },
+          "size": { "x": 65, "y": 65 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         }
@@ -238,13 +228,21 @@
     "photoButtons": [
       {
         "name": "Button_Game0",
-        "buttonSize": { "x": 150, "y": 70 },
+        "buttonSize": { "x": 191, "y": 179 },
         "buttonPosition": { "x": 1200, "y": 170 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
@@ -253,13 +251,21 @@
       },
       {
         "name": "Button_Game1",
-        "buttonSize": { "x": 150, "y": 70 },
+        "buttonSize": { "x": 191, "y": 179 },
         "buttonPosition": { "x": 1500, "y": 170 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
@@ -268,13 +274,21 @@
       },
       {
         "name": "Button_Game2",
-        "buttonSize": { "x": 150, "y": 70 },
+        "buttonSize": { "x": 191, "y": 179 },
         "buttonPosition": { "x": 350, "y": 450 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
@@ -283,13 +297,21 @@
       },
       {
         "name": "Button_Game3",
-        "buttonSize": { "x": 150, "y": 70 },
+        "buttonSize": { "x": 191, "y": 179 },
         "buttonPosition": { "x": 1000, "y": 450 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
@@ -298,102 +320,58 @@
       },
       {
         "name": "Button_Game4",
-        "buttonSize": { "x": 150, "y": 70 },
+        "buttonSize": { "x": 191, "y": 179 },
         "buttonPosition": { "x": 1650, "y": 450 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
-        "buttonText": {},
-        "buttonSound": "click1"
-      },
-      {
-        "name": "Button_Game5",
-        "buttonSize": { "x": 150, "y": 70 },
-        "buttonPosition": { "x": 350, "y": 650 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
           "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {},
-        "buttonSound": "click1"
-      },
-      {
-        "name": "Button_Game6",
-        "buttonSize": { "x": 150, "y": 70 },
-        "buttonPosition": { "x": 1000, "y": 650 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {},
-        "buttonSound": "click1"
-      },
-      {
-        "name": "Button_Game7",
-        "buttonSize": { "x": 150, "y": 70 },
-        "buttonPosition": { "x": 1650, "y": 650 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {},
-        "buttonSound": "click1"
-      },
-      {
-        "name": "Button_Game8",
-        "buttonSize": { "x": 150, "y": 70 },
-        "buttonPosition": { "x": 750, "y": 900 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {},
-        "buttonSound": "click1"
-      },
-      {
-        "name": "Button_Game9",
-        "buttonSize": { "x": 150, "y": 70 },
-        "buttonPosition": { "x": 1350, "y": 900 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
+          "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {},
         "buttonSound": "click1"
       }
-    ]
+    ],
+    "goTitleButton":{
+      "name": "Button_GotoTitle",
+      "buttonSize": { "x": 176, "y": 157 },
+      "buttonPosition": { "x": 1800, "y": 975 },
+      "buttonBackgroundImage": {
+        "name": "Image_ButtonImage",
+        "imagePath": "Image/Button/1_GoTitle.png",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 10, "y": 10 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {
+        "name": "",
+        "imagePath": "",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 0, "y": 0 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonText":{},
+      "buttonSound": "click1"
+    }
   },
   "explainPopupSetting": [
     {
       "name": "PopUp_Explain0",
       "popupBackgroundImage": {
         "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Background/1_Background.png",
         "position": { "x": 35, "y": 70 },
         "size": { "x": 1850, "y": 900 },
         "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -422,7 +400,7 @@
       "popupImages": [
         {
           "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 450, "y": 480 },
           "size": { "x": 500, "y": 500 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
@@ -433,12 +411,20 @@
         "name": "Button_CloseExplain",
         "buttonSize": { "x": 320, "y": 100 },
         "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Background/1_Background.png",
           "position": { "x": 0, "y": 0 },
           "size": { "x": 0, "y": 0 },
           "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
@@ -457,7 +443,7 @@
       "name": "PopUp_Explain1",
       "popupBackgroundImage": {
         "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Background/1_Background.png",
         "position": { "x": 35, "y": 70 },
         "size": { "x": 1850, "y": 900 },
         "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -477,7 +463,7 @@
       "popupImages": [
         {
           "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 450, "y": 480 },
           "size": { "x": 500, "y": 500 },
           "imageColor": { "r": 1, "g": 1, "b": 1, "a": 0.5 },
@@ -488,12 +474,20 @@
         "name": "Button_CloseExplain",
         "buttonSize": { "x": 320, "y": 100 },
         "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Background/1_Background.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
           "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
@@ -512,7 +506,7 @@
       "name": "PopUp_Explain2",
       "popupBackgroundImage": {
         "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Background/1_Background.png",
         "position": { "x": 35, "y": 70 },
         "size": { "x": 1850, "y": 900 },
         "imageColor": { "r": 1, "g": 1, "b": 1, "a": 0.5 },
@@ -532,7 +526,7 @@
       "popupImages": [
         {
           "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 450, "y": 480 },
           "size": { "x": 500, "y": 500 },
           "imageColor": { "r": 1, "g": 1, "b": 1, "a": 0.5 },
@@ -543,12 +537,20 @@
         "name": "Button_CloseExplain",
         "buttonSize": { "x": 320, "y": 100 },
         "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Background/1_Background.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
           "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
@@ -567,7 +569,7 @@
       "name": "PopUp_Explain3",
       "popupBackgroundImage": {
         "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Background/1_Background.png",
         "position": { "x": 35, "y": 70 },
         "size": { "x": 1850, "y": 900 },
         "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -587,7 +589,7 @@
       "popupImages": [
         {
           "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 450, "y": 480 },
           "size": { "x": 500, "y": 500 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -598,12 +600,20 @@
         "name": "Button_CloseExplain",
         "buttonSize": { "x": 320, "y": 100 },
         "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Background/1_Background.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
           "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
@@ -622,7 +632,7 @@
       "name": "PopUp_Explain4",
       "popupBackgroundImage": {
         "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Background/1_Background.png",
         "position": { "x": 35, "y": 70 },
         "size": { "x": 1850, "y": 900 },
         "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -642,7 +652,7 @@
       "popupImages": [
         {
           "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
+          "imagePath": "Image/Camera/2_Camera.png",
           "position": { "x": 450, "y": 480 },
           "size": { "x": 500, "y": 500 },
           "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
@@ -653,287 +663,20 @@
         "name": "Button_CloseExplain",
         "buttonSize": { "x": 320, "y": 100 },
         "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
+        "buttonBackgroundImage": {
           "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
+          "imagePath": "Image/Background/1_Background.png",
           "position": { "x": 0.5, "y": 0.5 },
           "size": { "x": 10, "y": 10 },
           "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
           "imageType": 0
         },
-        "buttonText": {
-          "name": "Text_Button1",
-          "text": "닫기",
+        "buttonAddtionalImage": {
+          "name": "",
+          "imagePath": "",
           "position": { "x": 0.5, "y": 0.5 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
-        },
-        "buttonSound": "click1"
-      }
-    },
-    {
-      "name": "PopUp_Explain5",
-      "popupBackgroundImage": {
-        "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-        "imageType": 0
-      },
-      "popupTexts": [
-        {
-          "name": "Text_ExplainText1",
-          "text": "설명 예시 팝업5",
-          "position": { "x": 925, "y": 100 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 170,
-          "fontColor": { "r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0 }
-        }
-      ],
-      "popupImages": [
-        {
-          "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 450, "y": 480 },
-          "size": { "x": 500, "y": 500 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-          "imageType": 0
-        }
-      ],
-      "popupButton": {
-        "name": "Button_CloseExplain",
-        "buttonSize": { "x": 320, "y": 100 },
-        "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {
-          "name": "Text_Button1",
-          "text": "닫기",
-          "position": { "x": 0.5, "y": 0.5 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
-        },
-        "buttonSound": "click1"
-      }
-    },
-    {
-      "name": "PopUp_Explain6",
-      "popupBackgroundImage": {
-        "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-        "imageType": 0
-      },
-      "popupTexts": [
-        {
-          "name": "Text_ExplainText1",
-          "text": "설명 예시 팝업6",
-          "position": { "x": 925, "y": 100 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 170,
-          "fontColor": { "r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0 }
-        }
-      ],
-      "popupImages": [
-        {
-          "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 450, "y": 480 },
-          "size": { "x": 500, "y": 500 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-          "imageType": 0
-        }
-      ],
-      "popupButton": {
-        "name": "Button_CloseExplain",
-        "buttonSize": { "x": 320, "y": 100 },
-        "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {
-          "name": "Text_Button1",
-          "text": "닫기",
-          "position": { "x": 0.5, "y": 0.5 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
-        },
-        "buttonSound": "click1"
-      }
-    },
-    {
-      "name": "PopUp_Explain7",
-      "popupBackgroundImage": {
-        "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-        "imageType": 0
-      },
-      "popupTexts": [
-        {
-          "name": "Text_ExplainText1",
-          "text": "설명 예시 팝업7",
-          "position": { "x": 925, "y": 100 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 170,
-          "fontColor": { "r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0 }
-        }
-      ],
-      "popupImages": [
-        {
-          "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 450, "y": 480 },
-          "size": { "x": 500, "y": 500 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-          "imageType": 0
-        }
-      ],
-      "popupButton": {
-        "name": "Button_CloseExplain",
-        "buttonSize": { "x": 320, "y": 100 },
-        "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {
-          "name": "Text_Button1",
-          "text": "닫기",
-          "position": { "x": 0.5, "y": 0.5 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
-        },
-        "buttonSound": "click1"
-      }
-    },
-    {
-      "name": "PopUp_Explain8",
-      "popupBackgroundImage": {
-        "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-        "imageType": 0
-      },
-      "popupTexts": [
-        {
-          "name": "Text_ExplainText1",
-          "text": "설명 예시 팝업8",
-          "position": { "x": 925, "y": 100 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 170,
-          "fontColor": { "r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0 }
-        }
-      ],
-      "popupImages": [
-        {
-          "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 450, "y": 480 },
-          "size": { "x": 500, "y": 500 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-          "imageType": 0
-        }
-      ],
-      "popupButton": {
-        "name": "Button_CloseExplain",
-        "buttonSize": { "x": 320, "y": 100 },
-        "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
-          "imageType": 0
-        },
-        "buttonText": {
-          "name": "Text_Button1",
-          "text": "닫기",
-          "position": { "x": 0.5, "y": 0.5 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 70,
-          "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
-        },
-        "buttonSound": "click1"
-      }
-    },
-    {
-      "name": "PopUp_Explain9",
-      "popupBackgroundImage": {
-        "name": "Image_PopUpEndBackground",
-        "imagePath": "Image/Background/1_background.png",
-        "position": { "x": 35, "y": 70 },
-        "size": { "x": 1850, "y": 900 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-        "imageType": 0
-      },
-      "popupTexts": [
-        {
-          "name": "Text_ExplainText1",
-          "text": "설명 예시 팝업9",
-          "position": { "x": 925, "y": 100 },
-          "rotationZ": 0.0,
-          "fontResourceName": "font1",
-          "fontSize": 170,
-          "fontColor": { "r": 0.18, "g": 0.42, "b": 0.97, "a": 1.0 }
-        }
-      ],
-      "popupImages": [
-        {
-          "name": "Image_Explain0",
-          "imagePath": "Image/1_Camera.jpg",
-          "position": { "x": 450, "y": 480 },
-          "size": { "x": 500, "y": 500 },
-          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
-          "imageType": 0
-        }
-      ],
-      "popupButton": {
-        "name": "Button_CloseExplain",
-        "buttonSize": { "x": 320, "y": 100 },
-        "buttonPosition": { "x": 925, "y": 800 },
-        "buttonImage": {
-          "name": "Image_ButtonImage",
-          "imagePath": "Image/Background/1_background.png",
-          "position": { "x": 0.5, "y": 0.5 },
-          "size": { "x": 10, "y": 10 },
-          "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
           "imageType": 0
         },
         "buttonText": {
@@ -953,16 +696,16 @@
     "name": "PopUp_GameEnd",
     "popupBackgroundImage": {
       "name": "Image_PopUpEndBackground",
-      "imagePath": "Image/Background/1_background.png",
-      "position": { "x": 35, "y": 70 },
-      "size": { "x": 1850, "y": 900 },
-      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.5 },
+      "imagePath": "Image/Overlap/1_Overlap.png",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 1920, "y": 1080 },
+      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
       "imageType": 0
     },
     "popupTexts": [
       {
         "name": "Text_PopupEndText1",
-        "text": "미션 성공!",
+        "text": "",
         "position": { "x": 925, "y": 100 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
@@ -971,7 +714,7 @@
       },
       {
         "name": "Text_PopupEndText2",
-        "text": "과학관에 숨겨진 사진들을 전부 찾았어요!",
+        "text": "",
         "position": { "x": 925, "y": 200 },
         "rotationZ": 0.0,
         "fontResourceName": "font2",
@@ -980,7 +723,7 @@
       },
       {
         "name": "Text_PopupEndText2",
-        "text": "이제 더 많은 이야기가 있는\n <color=#FFFF00>창의나래관 '사진맛집'</color>으로 출발해볼까요?",
+        "text": "",
         "position": { "x": 925, "y": 640 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
@@ -988,30 +731,63 @@
         "fontColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 }
       }
     ],
-    "popupImages": [],
+    "popupImages": [
+        {
+          "name": "Image_1_text",
+          "imagePath": "Image/1_Text.png",
+          "position": { "x": 960, "y": 180 },
+          "size": { "x": 741, "y": 145 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1 },
+          "imageType": 0
+        },
+                {
+          "name": "Image_2_text",
+          "imagePath": "Image/2_Text.png",
+          "position": { "x": 960, "y": 330 },
+          "size": { "x": 711, "y": 53 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+                {
+          "name": "Image_3_text",
+          "imagePath": "Image/3_Text.png",
+          "position": { "x": 960, "y": 730 },
+          "size": { "x": 710, "y": 114 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1 },
+          "imageType": 0
+        }
+    ],
     "popupButton": {
       "name": "Button_GotoFirst",
-      "buttonSize": { "x": 320, "y": 100 },
-      "buttonPosition": { "x": 925, "y": 800 },
-      "buttonImage": {
+      "buttonSize": { "x": 500, "y": 150 },
+      "buttonPosition": { "x": 960, "y": 910 },
+      "buttonBackgroundImage": {
         "name": "Image_ButtonImage",
-        "imagePath": "Image/Background/1_background.png",
+        "imagePath": "Image/Button/1_Button.png",
         "position": { "x": 0.5, "y": 0.5 },
         "size": { "x": 10, "y": 10 },
-        "imageColor": { "r": 0.0, "g": 0.0, "b": 0.5, "a": 1.0 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {
+        "name": "",
+        "imagePath": "",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 0, "y": 0 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
         "imageType": 0
       },
       "buttonText": {
         "name": "Text_Button1",
-        "text": "처음으로",
-        "position": { "x": 0.5, "y": 0.5 },
+        "text": "<b>처음으로</b>",
+        "position": { "x": 0.0, "y": 10.0 },
         "rotationZ": 0.0,
         "fontResourceName": "font1",
-        "fontSize": 70,
-        "fontColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
+        "fontSize": 52,
+        "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
       },
       "buttonSound": "click1"
     }
   },
-  "gameEndInventoryPosition": { "x": 960, "y": 460 }
+  "gameEndInventoryPosition": { "x": 960, "y": 525 }
 }

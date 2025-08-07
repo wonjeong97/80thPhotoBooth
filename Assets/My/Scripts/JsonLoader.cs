@@ -153,7 +153,8 @@ public class ButtonSetting
     public string name;
     public Vector2 buttonSize;
     public Vector2 buttonPosition;
-    public ImageSetting buttonImage;
+    public ImageSetting buttonBackgroundImage;
+    public ImageSetting buttonAdditionalImage;
     public TextSetting buttonText;
     public string buttonSound;
 }
@@ -182,7 +183,6 @@ public class InventorySetting
     public string name;
     public int columns;
     public int rows;
-    public float itemPadding;
     public ImageSetting inventoryBackgroundImage;
     public ImageSetting[] itemImages;
 }
@@ -194,6 +194,7 @@ public class Game1Setting
     public PopupSetting popupSetting;
     public InventorySetting inventorySetting;
     public ButtonSetting[] photoButtons;
+    public ButtonSetting goTitleButton;
 }
 
 [Serializable]
