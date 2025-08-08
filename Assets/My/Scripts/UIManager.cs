@@ -1,10 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,11 +18,6 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("UI 프리팹")]
-    [SerializeField] private GameObject buttonPrefab;   // 동적 생성 버튼 프리팹
-    [SerializeField] private GameObject textPrefab;     // 동적 생성 텍스트 프리팹
-    [SerializeField] private GameObject imagePrefab;    // 동적 생성 이미지 프리팹
-
     [Header("Audio")]
     [SerializeField] private AudioSource uiAudioSource; // UI 사운드 소스
 
@@ -29,13 +27,11 @@ public class UIManager : MonoBehaviour
     private float inactivityThreshold = 60f; // 입력이 없는 경우 타이틀로 되돌아가는 시간
     private float fadeTime = 1f; // 페이드 시간
 
-    private Transform titleCanvas;
-    private Transform gameCanvas;
-
     private GameObject titleCanvasInstance;
     private GameObject gameCanvasInstance;
-    private GameObject gameBackground;       // 게임 캔버스 백그라운드 이미지
-    private GameObject inventory;            // 인벤토리 오브젝트
+    private GameObject gameBackgroundInstance;       // 게임 캔버스 백그라운드 이미지
+    private GameObject inventoryInstance;            // 인벤토리 오브젝트
+    private GameObject goTitleButton;
 
     private Dictionary<string, Image> itemIcons = new Dictionary<string, Image>();
     private Dictionary<string, AudioClip> soundMap = new Dictionary<string, AudioClip>();
@@ -54,7 +50,7 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
-        }        
+        }
 
         StartCoroutine(LoadSoundsFromSettings()); // 사운드 로딩
     }
@@ -83,7 +79,7 @@ public class UIManager : MonoBehaviour
     {
         // 게임 캔버스가 활성화 된 경우,
         // 입력이 일정시간 이상 없을 시 씬을 재로드
-        if (gameCanvas != null && gameCanvas.gameObject.activeInHierarchy)
+        if (gameCanvasInstance != null && gameCanvasInstance.activeInHierarchy)
         {
             inactivityTimer += Time.deltaTime;
 
@@ -100,6 +96,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    #region UIManager Main Logics
     /// <summary>
     /// UI 초기화: 타이틀과 게임 캔버스 생성 및 설정
     /// </summary>
@@ -109,51 +106,63 @@ public class UIManager : MonoBehaviour
         if (titleCanvasInstance != null) Destroy(titleCanvasInstance);
         if (gameCanvasInstance != null) Destroy(gameCanvasInstance);
 
-        // 프리팹 로드
-        GameObject titlePrefab = Resources.Load<GameObject>("Prefabs/TitleCanvas");
-        GameObject gamePrefab = Resources.Load<GameObject>("Prefabs/GameCanvas");
-
-        if (titlePrefab == null || gamePrefab == null)
+        Addressables.LoadAssetAsync<GameObject>("TitleCanvas").Completed += handle =>
         {
-            Debug.LogError("[UIManager] Canvas prefabs loading failed.");
-            return;
-        }
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                GameObject titlePrefab = handle.Result;
+                titleCanvasInstance = Instantiate(titlePrefab); // 필요 시 부모 지정
+                titleCanvasInstance.SetActive(true);
 
-        // Instantiate
-        titleCanvasInstance = Instantiate(titlePrefab);
-        gameCanvasInstance = Instantiate(gamePrefab);
+                CreateTitle(); // 타이틀 화면 생성
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] Failed to load TitleCanvas prefab");
+            }
+        };
 
-        titleCanvas = titleCanvasInstance.transform;
-        gameCanvas = gameCanvasInstance.transform;
-
-        // 초기 상태: 타이틀 켜기, 게임 꺼두기
-        titleCanvas.gameObject.SetActive(true);
-        gameCanvas.gameObject.SetActive(false);
-
-        CreateTitle(); // 타이틀 화면 구성
+        Addressables.LoadAssetAsync<GameObject>("GameCanvas").Completed += handle =>
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                GameObject gamePrefab = handle.Result;
+                gameCanvasInstance = Instantiate(gamePrefab);
+                gameCanvasInstance.SetActive(false);
+            }
+            else
+            {
+                Debug.LogWarning("[UIManager] Failed to load GameCanvas prefab");
+            }
+        };
     }
 
     /// <summary>
     /// 타이틀 화면 구성
     /// </summary>
-    private void CreateTitle()
+    public void CreateTitle()
     {
-        TitleSetting setting = JsonLoader.Instance.Settings.titleSetting;
-        GameObject bg = CreateBackgroundImage(setting.backgroundImage, titleCanvas);
+        var setting = JsonLoader.Instance.Settings.titleSetting;
+        string soundKey = setting.startButton.buttonSound;
 
-        CreateTexts(setting.texts, bg);
-        CreateButton(setting.startButton, bg, () =>
+        // 1. 배경 이미지 생성
+        CreateBackgroundImage(setting.backgroundImage, titleCanvasInstance.transform, bg =>
         {
-            // 스타트 버튼 클릭 시 동작 설정
-
-            if (titleCanvas != null && titleCanvas.gameObject.activeInHierarchy)
+            if (bg != null)
             {
-                FadeManager.Instance?.FadeOut(fadeTime, () =>
+                // 2. 배경 텍스트 및 버튼 생성
+                CreateTexts(setting.texts, bg);
+                CreateButton(setting.startButton, bg, btn =>
                 {
-                    titleCanvas.gameObject.SetActive(false);
-                    gameCanvas.gameObject.SetActive(true);
-                    CreateGameUI();
-                    FadeManager.Instance?.FadeIn(fadeTime);
+                    // 3. 타이틀 "시작하기" 버튼 클릭 이벤트 연결
+                    if (btn != null && btn.TryGetComponent<Button>(out Button button))
+                    {
+                        button.onClick.AddListener(() =>
+                        {
+                            PlayClickSound(soundKey);
+                            CreateGameUI();
+                        });
+                    }
                 });
             }
         });
@@ -162,277 +171,126 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 게임화면 UI 구성
     /// </summary>
-    private void CreateGameUI()
+    public void CreateGameUI()
     {
-        Game1Setting setting = JsonLoader.Instance.Settings.game1Setting;
-        gameBackground = CreateBackgroundImage(setting.game1BackgroundImage, gameCanvas);
+        var setting = JsonLoader.Instance.Settings.game1Setting;
 
-        CreateStartPopup();
-    }
-
-    #region UI Creator
-    /// <summary>
-    /// 배경 이미지 생성
-    /// </summary>
-    public GameObject CreateBackgroundImage(ImageSetting backgroundSetting, Transform parentCanvas)
-    {
-        GameObject bg = Instantiate(imagePrefab, parentCanvas);
-        bg.name = backgroundSetting.name;
-        bg.transform.SetAsFirstSibling(); // 맨 뒤로 보내기
-
-        if (bg.TryGetComponent<Image>(out Image image))
+        CreateBackgroundImage(setting.game1BackgroundImage, gameCanvasInstance.transform, bg =>
         {
-            Texture2D texture = LoadTexture(backgroundSetting.imagePath);
-            if (texture)
+            gameBackgroundInstance = bg;    // 게임 배경 인스턴스 저장
+
+            Destroy(titleCanvasInstance);
+            gameCanvasInstance.SetActive(true);
+
+            // 게임 시작 전 스타트 팝업 생성
+            var startPopupSetting = JsonLoader.Instance.Settings.game1Setting.popupSetting;
+            CreatePopup(startPopupSetting, gameBackgroundInstance.transform, startPopup =>
             {
-                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-            }
-            image.color = backgroundSetting.imageColor;
-        }
 
-        if (bg.TryGetComponent<RectTransform>(out RectTransform rt))
-        {
-            rt.pivot = new Vector2(0f, 1f);
-            rt.sizeDelta = backgroundSetting.size;
-            rt.anchoredPosition = new Vector2(backgroundSetting.position.x, -backgroundSetting.position.y);
-        }
-
-        return bg;
-    }
-
-    /// <summary>
-    /// 텍스트 생성
-    /// </summary>
-    private void CreateTexts(TextSetting[] settings, GameObject parent)
-    {
-        foreach (var setting in settings)
-        {
-            string mappedFontName = ResolveFont(setting.fontResourceName);
-
-            GameObject go = Instantiate(textPrefab, parent.transform);
-            go.name = setting.name;
-
-            if (go.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI uiText))
-            {
-                uiText.text = setting.text;
-                uiText.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
-                uiText.fontSize = setting.fontSize;
-                uiText.color = setting.fontColor;
-                uiText.alignment = TextAlignmentOptions.Center; // 중앙 정렬
-            }
-
-            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
-            {
-                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-                rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 이미지 생성
-    /// </summary>
-    private void CreateImages(ImageSetting[] settings, GameObject parent)
-    {
-        if (settings == null || settings.Length == 0) return;
-
-        foreach (var setting in settings)
-        {
-            GameObject go = Instantiate(imagePrefab, parent.transform);
-            go.name = setting.name;
-
-            if (go.TryGetComponent<Image>(out Image image))
-            {
-                Texture2D texture = LoadTexture(setting.imagePath);
-                if (texture)
-                {
-                    image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-                }
-                image.color = setting.imageColor;
-                image.type = (Image.Type)setting.imageType;
-            }
-
-            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
-            {
-                rt.sizeDelta = setting.size;
-                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 버튼 생성 및 클릭 이벤트 연결
-    /// </summary>
-    private GameObject CreateButton(ButtonSetting setting, GameObject parent, UnityAction onClickAction)
-    {
-        GameObject go = Instantiate(buttonPrefab, parent.transform);
-        go.name = setting.name;
-
-        if (go.TryGetComponent<RectTransform>(out RectTransform rt))
-        {
-            rt.sizeDelta = setting.buttonSize;
-            rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
-        }
-
-        // 배경 이미지 설정
-        if (go.TryGetComponent<Image>(out Image image) && setting.buttonBackgroundImage != null)
-        {
-            Texture2D texture = LoadTexture(setting.buttonBackgroundImage.imagePath);
-            if (texture)
-            {
-                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-            }
-            image.color = setting.buttonBackgroundImage.imageColor;
-
-            // 이미지 타입 설정
-            image.type = (Image.Type)setting.buttonBackgroundImage.imageType;
-        }
-
-        // 에디셔널 이미지 설정
-        if (setting.buttonAdditionalImage != null)
-        {
-            GameObject additionalImageGO = Instantiate(imagePrefab, go.transform);
-            additionalImageGO.name = setting.buttonAdditionalImage.name;
-
-            if (additionalImageGO.TryGetComponent<Image>(out Image addImg))
-            {
-                Texture2D texture = LoadTexture(setting.buttonAdditionalImage.imagePath);
-                if (texture)
-                {
-                    addImg.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-                }
-                addImg.color = setting.buttonAdditionalImage.imageColor;
-                addImg.type = (Image.Type)setting.buttonAdditionalImage.imageType;
-            }
-
-            if (additionalImageGO.TryGetComponent<RectTransform>(out RectTransform addRT))
-            {
-                addRT.sizeDelta = setting.buttonAdditionalImage.size;
-                addRT.anchoredPosition = new Vector2(setting.buttonAdditionalImage.position.x, -setting.buttonAdditionalImage.position.y);
-                addRT.anchorMin = new Vector2(0.0f, 1.0f); // 좌상단
-                addRT.anchorMax = new Vector2(0.0f, 1.0f);
-                addRT.pivot = new Vector2(0.5f, 0.5f);
-            }
-        }
-
-        // 텍스트 설정 (자식에 TextMeshProUGUI 컴포넌트가 있다고 가정)
-        TextMeshProUGUI text = go.GetComponentInChildren<TextMeshProUGUI>();
-
-        if (text != null && setting.buttonText != null &&
-            !string.IsNullOrEmpty(setting.buttonText.text) &&
-            !string.IsNullOrEmpty(setting.buttonText.fontResourceName))
-        {
-            string mappedFontName = ResolveFont(setting.buttonText.fontResourceName);
-
-            text.text = setting.buttonText.text;
-            text.font = Resources.Load<TMP_FontAsset>($"Font/{mappedFontName}");
-            text.fontSize = setting.buttonText.fontSize;
-            text.color = setting.buttonText.fontColor;
-          
-
-            if (text.TryGetComponent<RectTransform>(out RectTransform textRT))
-            {
-                textRT.anchoredPosition = new Vector2(setting.buttonText.position.x, setting.buttonText.position.y);
-                textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
-            }
-        }
-
-        // 버튼 클릭 이벤트
-        if (go.TryGetComponent<Button>(out Button button) && onClickAction != null)
-        {
-            string soundKey = setting.buttonSound;
-
-            button.onClick.AddListener(() =>
-            {
-                PlayClickSound(soundKey);
-                onClickAction?.Invoke();
+                StartCoroutine(AfterCloseStartPopup(gameBackgroundInstance));
             });
-        }
-
-        return go;
-    }
-
-    /// <summary>
-    /// 게임 시작 안내 팝업을 생성합니다.
-    /// 출발 버튼 클릭 시 인벤토리와 사진 버튼들을 생성합니다.
-    /// </summary>
-    private void CreateStartPopup()
-    {
-        // 게임 시작 팝업 설정 불러오기
-        PopupSetting setting = JsonLoader.Instance.Settings.game1Setting.popupSetting;
-
-        // 팝업 생성 (닫기 이벤트 포함)
-        CreatePopup(setting, gameBackground, () =>
-        {
-            // 팝업 닫힌 후 다음 단계 실행
-            StartCoroutine(AfterCloseStartPopup(gameBackground));
         });
     }
 
     /// <summary>
     /// 스타트 팝업 창이 닫힌 후 인벤토리, 게임 버튼 생성 및 이벤트 연결
     /// </summary>
-    /// <param name="parent">인벤토리 및 게임 버튼이 붙는 게임 캔버스의 배경 이미지</param>
-    /// <returns></returns>
     private IEnumerator AfterCloseStartPopup(GameObject parent)
     {
-        // 1 프레임 기다렸다가 실행 (SetActive 이후 안정적으로 처리)
         yield return null;
 
-        Game1Setting game1Setting = JsonLoader.Instance.Settings.game1Setting;
-        CreateInventory(game1Setting.inventorySetting, parent); // 인벤토리 생성
+        var setting = JsonLoader.Instance.Settings;
 
-        // 포토 버튼 생성 및 이벤트 연결
-        for (int i = 0; i < game1Setting.photoButtons.Length; i++)
-        {
-            GameObject gameButton = CreateButton(game1Setting.photoButtons[i], parent, null);
-            string soundKey = game1Setting.photoButtons[i].buttonSound;
+        // 1. 인벤토리 이미지 생성
+        CreateInventory(setting.game1Setting.inventorySetting, parent);
 
-            if (gameButton.TryGetComponent<Button>(out Button btn))
+        // 2. 게임 내 "핀 포인트 버튼" 생성"
+        CreateButton(setting.game1Setting.pinPointButton, parent, pinBtn => {
+            if (pinBtn != null && pinBtn.TryGetComponent<Button>(out Button button))
             {
-                int index = i;
+                button.onClick.AddListener(() =>
+                {
+                    Debug.Log("Pin btn clicked1");
+                    CreatePopup(setting.pinPointPopupSetting, gameBackgroundInstance.transform, pinPointPopup =>
+                    {
+                        Debug.Log("Pin btn clicked2");
+                    });
+                });
+            }    
 
+        });
+
+        // 3. 게임 내 "카메라 이미지 버튼" 생성
+        for (int i = 0; i < setting.game1Setting.photoButtons.Length; i++)
+        {
+            int index = i;
+            string soundKey = setting.game1Setting.photoButtons[i].buttonSound;
+
+            CreateButton(setting.game1Setting.photoButtons[i], parent, btnGO =>
+            {
+                if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
+                {
+                    // 3. 카메라 이미지 버튼 클릭 시 동작 이벤트 연결
+                    btn.onClick.AddListener(() =>
+                    {
+                        // 기존 방식: 아이템 인덱스에 맞춰 인벤토리 아이템 색상 켜짐
+                        //if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
+                        //{
+                        //    PlayClickSound(soundKey);       // 버튼 클릭음 재생
+                        //    itemImage.material = null;      // 연결된 아이템 이미지 색 원복
+                        //    itemFoundCount++;               // 아이템 찾음 수 증가
+                        //    Destroy(btn.gameObject);        // 버튼 파괴
+
+                        //    // 4. 각 카메라 버튼에 맞는 설명 팝업 생성
+                        //    CreatePopup(setting.explainPopupSetting[index],
+                        //        gameBackgroundInstance.transform, explainPopup =>
+                        //    {
+                        //        if (itemFoundCount == setting.game1Setting.inventorySetting.itemImages.Length)
+                        //        {
+                        //            CreateGameEndPopup();
+                        //        }
+                        //    });
+                        //}
+                        // 변경방식: 왼쪽부터 빈칸 채우기                        
+                        if (itemFoundCount < itemIcons.Count)
+                        {
+                            PlayClickSound(soundKey);
+
+                            // 현재 버튼에 있는 카메라 이미지를 가져와서 인벤토리 칸에 적용
+                            if (btn.TryGetComponent<Image>(out Image btnImage) &&
+                                itemIcons.TryGetValue($"Item_{itemFoundCount}", out Image slotImage))
+                            {
+                                slotImage.sprite = btnImage.sprite;
+                                slotImage.color = Color.white; // 원본 색상
+                            }
+
+                            itemFoundCount++;
+                            Destroy(btn.gameObject); // 버튼 제거
+
+                            CreatePopup(setting.explainPopupSetting[index],
+                                gameBackgroundInstance.transform, explainPopup =>
+                                {
+                                    if (itemFoundCount == setting.game1Setting.inventorySetting.itemImages.Length)
+                                    {
+                                        CreateGameEndPopup();
+                                    }
+                                });
+                        }
+                    });
+                }
+            });
+        }
+
+        // "처음으로" 버튼 생성 및 이벤트 연결
+        CreateButton(setting.game1Setting.goTitleButton, parent, goTitleBtn =>
+        {
+            if (goTitleBtn != null && goTitleBtn.TryGetComponent<Button>(out Button btn))
+            {
+                goTitleButton = goTitleBtn;
                 btn.onClick.AddListener(() =>
                 {
-                    if (itemIcons.TryGetValue($"Item_{index}", out Image itemImage))
-                    {
-                        PlayClickSound(soundKey);
-                        itemImage.material = null;  // 연결된 아이템 이미지의 색 복원
-                        itemFoundCount++;
-
-                        btn.gameObject.SetActive(false);
-                        CreateExplainPopup(index); // 설명 팝업 생성
-                    }
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 });
-            }
-        }
-
-        GameObject goTitleButton = CreateButton(game1Setting.goTitleButton, parent, () => 
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        });
-    }
-
-    /// <summary>
-    /// 설명 팝업을 생성합니다. 인덱스에 따라 해당 설명 내용을 로드합니다.
-    /// 닫기 버튼 클릭 시 모든 아이템을 찾았다면 엔딩 팝업으로 넘어갑니다.
-    /// </summary>
-    /// <param name="index">해당 포토 버튼 인덱스</param>
-    private void CreateExplainPopup(int index)
-    {
-        var explainSettings = JsonLoader.Instance.Settings.explainPopupSetting;
-        if (index < 0 || index >= explainSettings.Length)
-        {
-            Debug.LogWarning($"잘못된 인덱스: {index}");
-            return;
-        }
-
-        CreatePopup(explainSettings[index], gameBackground, () =>
-        {
-            // 설명 팝업 닫기 시 아이템 수 체크
-            if (itemFoundCount == JsonLoader.Instance.Settings.game1Setting.photoButtons.Length)
-            {
-                CreateGameEndPopup();
             }
         });
     }
@@ -443,144 +301,295 @@ public class UIManager : MonoBehaviour
     private void CreateGameEndPopup()
     {
         PopupSetting setting = JsonLoader.Instance.Settings.gameEndPopupSetting;
-        string soundKey = setting.popupButton.buttonSound;
 
-        CreatePopup(setting, gameBackground, () =>
+        // 1. 팝업 백그라운드 이미지 생성
+        CreateBackgroundImage(setting.popupBackgroundImage, gameBackgroundInstance.transform, popupBG =>
         {
-            inventory.SetActive(false);
-            FadeManager.Instance?.FadeOut(fadeTime, () =>
-            { 
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            });            
+            popupBG.transform.SetAsLastSibling();
+
+            // 2. 텍스트 생성
+            //foreach (var textSetting in setting.popupTexts)
+            //    CreateTexts(new[] { textSetting }, popupBG);
+
+            // 3. 이미지 생성
+            foreach (var imgSetting in setting.popupImages)
+            {
+                CreateImage(imgSetting, popupBG, null);
+            }
+                
+
+            // 버튼 생성
+            CreateButton(setting.popupButton, popupBG, btnGO =>
+            {
+                if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
+                {
+                    btn.onClick.AddListener(() =>
+                    {
+                        Destroy(popupBG);
+                        FadeManager.Instance?.FadeOut(fadeTime, () =>
+                        {
+                            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                        });
+                    });
+                }
+            });
+
+            goTitleButton.SetActive(false);
+
+            if (inventoryInstance != null)
+            {
+                inventoryInstance.transform.SetParent(popupBG.transform);
+                if (inventoryInstance.TryGetComponent<RectTransform>(out var invRT))
+                {
+                    invRT.pivot = new Vector2(0.5f, 0.5f);
+                    invRT.anchoredPosition = new(JsonLoader.Instance.Settings.gameEndInventoryPosition.x,
+                        -JsonLoader.Instance.Settings.gameEndInventoryPosition.y);
+                }
+            }
         });
-
-        if (inventory != null)
-        {
-            RectTransform invRT = inventory.GetComponent<RectTransform>();
-            invRT.pivot = new Vector2(0.5f, 0.5f);
-            invRT.anchoredPosition = new(JsonLoader.Instance.Settings.gameEndInventoryPosition.x, -JsonLoader.Instance.Settings.gameEndInventoryPosition.y);
-
-            // 팝업보다 인벤토리를 위로 이동
-            inventory.transform.SetAsLastSibling();
-        }
     }
 
-    private void CreatePopup(PopupSetting setting, GameObject parent, UnityAction onClose = null)
+    private void CreatePopup(PopupSetting setting, Transform parent, UnityAction<GameObject> OnClose = null)
     {
-        GameObject popupBG = CreateBackgroundImage(setting.popupBackgroundImage, parent.transform);
-        popupBG.name = setting.name;
-
-        CreateTexts(setting.popupTexts, popupBG);
-        CreateImages(setting.popupImages, popupBG);
-
-        CreateButton(setting.popupButton, popupBG, () =>
+        // 1. 팝업 백그라운드 이미지 생성
+        CreateBackgroundImage(setting.popupBackgroundImage, parent, popupBG =>
         {
-            popupBG.SetActive(false);
-            onClose?.Invoke(); // 닫기 후 실행
-        });
+            popupBG.transform.SetAsLastSibling();
 
-        // 팝업을 UI 최상단으로 이동
-        popupBG.transform.SetAsLastSibling();
+            // 2. 텍스트 생성
+            foreach (var textSetting in setting.popupTexts)
+                CreateTexts(new[] { textSetting }, popupBG);
+
+            // 3. 이미지 생성
+            foreach (var imgSetting in setting.popupImages)
+                CreateImage(imgSetting, popupBG, null);
+
+            // 버튼 생성
+            CreateButton(setting.popupButton, popupBG, btnGO =>
+            {
+                if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
+                {
+                    btn.onClick.AddListener(() =>
+                    {
+                        Destroy(popupBG);
+                        OnClose?.Invoke(popupBG);
+                    });
+                }
+            });
+        });
     }
 
     private void CreateInventory(InventorySetting setting, GameObject parent)
     {
-        // 배경 이미지 생성
-        GameObject bg = Instantiate(imagePrefab, parent.transform);
-        bg.name = setting.inventoryBackgroundImage.name;
-        inventory = bg;
-
-        if (bg.TryGetComponent<Image>(out Image image))
+        CreateImage(setting.inventoryBackgroundImage, parent, bg =>
         {
-            Texture2D texture = LoadTexture(setting.inventoryBackgroundImage.imagePath);
-            if (texture)
+            if (bg != null)
             {
-                image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                inventoryInstance = bg;
+                CreateInventoryItems(setting.itemImages, bg.transform);
             }
-            image.color = setting.inventoryBackgroundImage.imageColor;
-            image.type = (Image.Type)setting.inventoryBackgroundImage.imageType;
-        }
-
-        if (bg.TryGetComponent<RectTransform>(out RectTransform bgRT))
-        {
-            bgRT.sizeDelta = setting.inventoryBackgroundImage.size;
-            bgRT.anchoredPosition = new(setting.inventoryBackgroundImage.position.x, -setting.inventoryBackgroundImage.position.y);
-        }
-
-        CreateInventoryItems(setting.itemImages, bgRT, setting.columns, setting.rows);
+        });
     }
 
-    private void CreateInventoryItems(ImageSetting[] settings, RectTransform parentRT, int columns, int rows)
+    private void CreateInventoryItems(ImageSetting[] items, Transform parent)
     {
-        itemIcons.Clear(); // 새로 생성 시 초기화
-        int i = 0;
+        itemIcons.Clear();
 
-        foreach (var setting in settings)
+        for (int i = 0; i < items.Length; i++)
         {
-            GameObject itemGO = Instantiate(imagePrefab, parentRT);
-            itemGO.name = $"Item_{i}";
+            int index = i; // 비동기 콜백에서 안전하게 참조하기 위한 복사
 
-            if (itemGO.TryGetComponent<Image>(out Image img))
+            CreateImage(items[index], parent.gameObject, createdImgGO =>
             {
-                Texture2D tex = LoadTexture(setting.imagePath);
-                if (tex)
+                if (createdImgGO != null && createdImgGO.TryGetComponent<Image>(out Image img))
                 {
-                    img.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), Vector2.one * 0.5f);
+                    // 처음엔 빈칸: 스프라이트 제거, 색상만 유지
+                    img.sprite = null;
+                    img.color = new Color(1, 1, 1, 0);
+
+                    // itemIcons에 등록
+                    itemIcons[$"Item_{index}"] = img;
                 }
-                img.color = setting.imageColor;
-                img.type = (Image.Type)setting.imageType;
-
-                // 회색톤 효과 적용
-                Material grayscaleMat = Resources.Load<Material>("Materials/Grayscale");
-                img.material = grayscaleMat;
-            }
-
-            if (itemGO.TryGetComponent<RectTransform>(out RectTransform rt))
-            {
-                rt.sizeDelta = setting.size;
-                rt.anchorMin = rt.anchorMax = new Vector2(0.0f, 1.0f);
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-            }
-
-            itemIcons[$"Item_{i}"] = img;
-            i++;
+            });
         }
     }
     #endregion
 
-    #region Utils
+    #region UI Create
+    /// <summary>
+    /// 배경 이미지 생성
+    /// </summary>
+    private void CreateBackgroundImage(ImageSetting setting, Transform parent, Action<GameObject> onComplete)
+    {
+        LoadPrefabAndInstantiate("ImagePrefab", parent, background =>
+        {
+            if (background == null) { onComplete?.Invoke(null); return; }
+            background.name = setting.name;
+            background.transform.SetAsFirstSibling();
+
+            if (background.TryGetComponent<Image>(out Image image))
+            {
+                Texture2D texture = LoadTexture(setting.imagePath);
+                if (texture)
+                    image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                image.color = setting.imageColor;
+            }
+
+            if (background.TryGetComponent<RectTransform>(out RectTransform rt))
+            {
+                rt.pivot = new Vector2(0f, 1f);
+                rt.sizeDelta = setting.size;
+                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+            }
+
+            onComplete?.Invoke(background);
+        });
+    }
+
+    /// <summary>
+    /// 이미지 생성
+    /// </summary>
+    private void CreateImage(ImageSetting setting, GameObject parent, Action<GameObject> onComplete)
+    {
+        LoadPrefabAndInstantiate("ImagePrefab", parent.transform, go =>
+        {
+            if (go == null) { onComplete?.Invoke(null); return; }
+            go.name = setting.name;
+
+            if (go.TryGetComponent<Image>(out Image image))
+            {
+                Texture2D texture = LoadTexture(setting.imagePath);
+                if (texture)
+                    image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                image.color = setting.imageColor;
+                image.type = (Image.Type)setting.imageType;
+            }
+
+            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+            {
+                rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+                rt.sizeDelta = setting.size;
+            }
+
+            onComplete?.Invoke(go);
+        });
+    }
+
+    /// <summary>
+    /// 텍스트 생성
+    /// </summary>
+    private void CreateTexts(TextSetting[] settings, GameObject parent, Action onComplete = null)
+    {
+        int remaining = settings.Length;
+        if (remaining == 0) { onComplete?.Invoke(); return; }
+
+        foreach (var setting in settings)
+        {
+            LoadPrefabAndInstantiate("TextPrefab", parent.transform, go =>
+            {
+                if (go != null)
+                {
+                    go.name = setting.name;
+                    if (go.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI uiText))
+                    {
+                        LoadFontAndApply(uiText, setting.fontResourceName, setting.text, setting.fontSize, setting.fontColor);
+                    }
+                    if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+                    {
+                        rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+                        rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
+                    }
+                }
+
+                remaining--;
+                if (remaining <= 0) onComplete?.Invoke();
+            });
+        }
+    }
+
+    /// <summary>
+    /// 버튼 생성 및 클릭 이벤트 연결
+    /// </summary>
+    private void CreateButton(ButtonSetting setting, GameObject parent, Action<GameObject> onComplete = null)
+    {
+        LoadPrefabAndInstantiate("ButtonPrefab", parent.transform, go =>
+        {
+            if (go == null) { onComplete?.Invoke(null); return; }
+            go.name = setting.name;
+
+            // 1) 버튼 배경 이미지
+            if (go.TryGetComponent<Image>(out Image bgImage) && setting.buttonBackgroundImage != null)
+            {
+                Texture2D texture = LoadTexture(setting.buttonBackgroundImage.imagePath);
+                if (texture)
+                    bgImage.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                bgImage.color = setting.buttonBackgroundImage.imageColor;
+                bgImage.type = (Image.Type)setting.buttonBackgroundImage.imageType;
+            }
+
+            // 2) 버튼 추가 이미지 (자식 오브젝트로 생성)
+            if (setting.buttonAdditionalImage != null && !string.IsNullOrEmpty(setting.buttonAdditionalImage.imagePath))
+            {
+                CreateImage(setting.buttonAdditionalImage, go, addImgGO =>
+                {
+                    if (addImgGO != null && addImgGO.TryGetComponent<RectTransform>(out RectTransform addRT))
+                    {
+                        addRT.anchoredPosition = new Vector2(setting.buttonAdditionalImage.position.x, -setting.buttonAdditionalImage.position.y);
+                        addRT.sizeDelta = setting.buttonAdditionalImage.size;
+                    }
+                });
+            }
+
+            // 3) 버튼 텍스트
+            var textComp = go.GetComponentInChildren<TextMeshProUGUI>();
+            if (textComp != null && setting.buttonText != null && !string.IsNullOrEmpty(setting.buttonText.text))
+            {
+                LoadFontAndApply(textComp, setting.buttonText.fontResourceName,
+                                 setting.buttonText.text, setting.buttonText.fontSize, setting.buttonText.fontColor);
+                if (textComp.TryGetComponent<RectTransform>(out RectTransform textRT))
+                {
+                    textRT.anchoredPosition = new Vector2(setting.buttonText.position.x, setting.buttonText.position.y);
+                    textRT.localRotation = Quaternion.Euler(0, 0, setting.buttonText.rotationZ);
+                }
+            }
+
+            // 4) 버튼 크기와 위치
+            if (go.TryGetComponent<RectTransform>(out RectTransform rt))
+            {
+                rt.sizeDelta = setting.buttonSize;
+                rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
+            }
+
+            onComplete?.Invoke(go);
+        });
+    }
+    #endregion
+
+    #region Utilities
     /// <summary>
     /// Path로부터 이미지를 읽고 텍스쳐로 변환
-    /// </summary>
-    /// <param name="relativePath"></param>
-    /// <returns></returns>
+    /// </summary>    
     private Texture2D LoadTexture(string relativePath)
     {
-        if (string.IsNullOrEmpty(relativePath))
-        {
-            return null;
-        }
+        // 경로가 비어있음
+        if (string.IsNullOrEmpty(relativePath)) return null;
 
         string fullPath = Path.Combine(Application.streamingAssetsPath, relativePath);
 
-        if (!File.Exists(fullPath))
-        {
-            return null;
-        }
+        // Path가 존재하지 않음, 잘못된 경로
+        if (!File.Exists(fullPath)) return null;
 
         byte[] fileData = File.ReadAllBytes(fullPath);
         Texture2D texture = new Texture2D(2, 2);
         texture.LoadImage(fileData);
+
         return texture;
     }
 
     /// <summary>
-    /// JSON의 font 키값(font1, font2 등)을 실제 폰트 파일 이름으로 매핑합니다.
-    /// FontMapping 클래스의 필드명을 리플렉션으로 찾아 반환합니다.
-    /// </summary>
-    /// <param name="key">JSON 내에 명시된 font 키 (예: "font1")</param>
-    /// <returns>실제 폰트 리소스 파일 이름 (예: "NanumGothic-Regular SDF")</returns>
+    /// JSON의 font 키값(font1, font2 등)을 실제 폰트 파일 이름으로 매핑
+    /// FontMapping 클래스의 필드명을 리플렉션으로 찾아 반환
+    /// </summary>    
     private string ResolveFont(string key)
     {
         FontMapping fontMap = JsonLoader.Instance.Settings.fontMap;
@@ -597,8 +606,8 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// JSON에 정의된 사운드 목록을 StreamingAssets/Audio 경로에서 로드하여 soundMap에 저장합니다.
-    /// 각 사운드는 key-clip 쌍으로 저장되며, 재생 시 key로 참조합니다.
+    /// JSON에 정의된 사운드 목록을 StreamingAssets/Audio 경로에서 로드하여 soundMap에 저장
+    /// 각 사운드는 key-clip 쌍으로 저장되며, 재생 시 key로 참조
     /// </summary>
     private IEnumerator LoadSoundsFromSettings()
     {
@@ -631,10 +640,9 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 지정된 사운드 키에 해당하는 AudioClip을 찾아 재생합니다.
-    /// 사운드는 UI 버튼 클릭 시 사용됩니다.
+    /// 지정된 사운드 키에 해당하는 AudioClip을 찾아 재생
+    /// 사운드는 UI 버튼 클릭 시 사용
     /// </summary>
-    /// <param name="key">JSON에 등록된 사운드 키 (예: "click1")</param>
     private void PlayClickSound(string key)
     {
         // AudioSource가 있고, 해당 key에 대한 clip이 있으면 재생
@@ -642,8 +650,113 @@ public class UIManager : MonoBehaviour
         {
             // 키에 해당하는 볼륨 없으면 기본값 1.0 사용
             float volume = soundVolumeMap.TryGetValue(key, out float v) ? v : 1.0f;
-            uiAudioSource.PlayOneShot(clip);
+            uiAudioSource.PlayOneShot(clip, volume);
         }
     }
+
+    /// <summary>
+    /// Addressable로 폰트를 로드 후 텍스트 설정
+    /// </summary>
+    private void LoadFontAndApply(TextMeshProUGUI uiText, string fontKey, string textValue, int fontSize, Color fontColor, Action onComplete = null)
+    {
+        if (uiText == null || string.IsNullOrEmpty(fontKey))
+            return;
+
+        uiText.enabled = false; // 로딩 전 렌더 방지      
+
+        string mappedFontName = ResolveFont(fontKey);
+
+        Addressables.LoadAssetAsync<TMP_FontAsset>(mappedFontName).Completed += handle =>
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                uiText.font = handle.Result;
+                uiText.fontSize = fontSize;
+                uiText.color = fontColor;
+                uiText.alignment = TextAlignmentOptions.Center;
+                uiText.text = textValue;
+                uiText.enabled = true;
+
+                onComplete?.Invoke();
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] Font load failed: {mappedFontName}");
+            }
+        };
+    }
+
+    /// <summary>
+    /// 타깃 이미지에 Addressable로 로드한 머티리얼을 적용함
+    /// </summary>
+    private void LoadMaterialAndApply(Image targetImage, string materialKey)
+    {
+        if (targetImage == null || string.IsNullOrEmpty(materialKey))
+            return;
+
+        Addressables.LoadAssetAsync<Material>(materialKey).Completed += handle =>
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                targetImage.material = handle.Result;
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] Material load failed: {materialKey}");
+            }
+        };
+    }
+
+    /// <summary>
+    /// 프리팹을 로드 후 Instantiate,
+    /// 성공 시 연결된 이벤트 호출하면서 생성된 프리팹 오브젝트 반환
+    /// </summary>
+    private void LoadPrefabAndInstantiate(string key, Transform parent, Action<GameObject> onComplete)
+    {
+        Addressables.LoadAssetAsync<GameObject>(key).Completed += handle =>
+        {
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                GameObject go = Instantiate(handle.Result, parent);
+                onComplete?.Invoke(go);
+            }
+            else
+            {
+                Debug.LogWarning($"[UIManager] Failed to load prefab: {key}");
+                onComplete?.Invoke(null);
+            }
+        };
+    }
+
+    private IEnumerator FadeInProperties(Image[] images, float durationPerImage, Action onComplete = null)
+    {
+        foreach (var img in images)
+        {
+            if (img == null) continue;
+
+            // 시작 알파 0
+            Color c = img.color;
+            c.a = 0f;
+            img.color = c;
+
+            float elapsed = 0f;
+            while (elapsed < durationPerImage)
+            {
+                elapsed += Time.deltaTime;
+                float alpha = Mathf.Clamp01(elapsed / durationPerImage);
+
+                c.a = alpha;
+                img.color = c;
+
+                yield return null;
+            }
+
+            // 안전하게 알파 1 고정
+            c.a = 1f;
+            img.color = c;
+        }
+
+        onComplete?.Invoke();
+    }
     #endregion
-}  
+}

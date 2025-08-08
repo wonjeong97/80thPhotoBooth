@@ -181,8 +181,6 @@ public class PopupSetting
 public class InventorySetting
 {
     public string name;
-    public int columns;
-    public int rows;
     public ImageSetting inventoryBackgroundImage;
     public ImageSetting[] itemImages;
 }
@@ -194,6 +192,7 @@ public class Game1Setting
     public PopupSetting popupSetting;
     public InventorySetting inventorySetting;
     public ButtonSetting[] photoButtons;
+    public ButtonSetting pinPointButton;
     public ButtonSetting goTitleButton;
 }
 
@@ -208,6 +207,7 @@ public class Settings
     public TitleSetting titleSetting;
     public Game1Setting game1Setting;
     public PopupSetting[] explainPopupSetting;
+    public PopupSetting pinPointPopupSetting;
     public PopupSetting gameEndPopupSetting;
     public Vector2 gameEndInventoryPosition;
 }
