@@ -37,8 +37,9 @@
         "imageType": 0
       },
       "buttonAdditionalImage": {
+        "name": "Image_cursor",
         "imagePath": "Image/Button/1_Cursor.png",
-        "position": { "x": 550, "y": 30 },
+        "position": { "x": 550, "y": 150 },
         "size": { "x": 150, "y": 150 },
         "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
         "imageType": 0
@@ -590,9 +591,20 @@
     "popupBackgroundImage": {
       "name": "Image_PopUpEndBackground",
       "imagePath": "Image/Background/1_Overlap.png",
-      "position": { "x": 0, "y": 0 },
-      "size": { "x": 1920, "y": 1080 },
-      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "size": {
+        "x": 1920,
+        "y": 1080
+      },
+      "imageColor": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 1.0
+      },
       "imageType": 0
     },
     "popupTexts": [],
@@ -600,52 +612,112 @@
       {
         "name": "Image_1_text",
         "imagePath": "Image/1_Text.png",
-        "position": { "x": 960, "y": 180 },
-        "size": { "x": 741, "y": 145 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1 },
+        "position": {
+          "x": 960,
+          "y": 180
+        },
+        "size": {
+          "x": 741,
+          "y": 145
+        },
+        "imageColor": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0
+        },
         "imageType": 0
       },
       {
         "name": "Image_2_text",
         "imagePath": "Image/2_Text.png",
-        "position": { "x": 960, "y": 330 },
-        "size": { "x": 711, "y": 53 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "position": {
+          "x": 960,
+          "y": 330
+        },
+        "size": {
+          "x": 711,
+          "y": 53
+        },
+        "imageColor": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0
+        },
+        "imageType": 0
+      },
+      {
+        "name": "Image_InventoryFull",
+        "imagePath": "Image/Inventory/3_InventoryFull.png",
+        "position": {
+          "x": 960,
+          "y": 525
+        },
+        "size": {
+          "x": 600,
+          "y": 150
+        },
+        "imageColor": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0
+        },
         "imageType": 0
       },
       {
         "name": "Image_3_text",
         "imagePath": "Image/3_Text.png",
-        "position": { "x": 960, "y": 730 },
-        "size": { "x": 710, "y": 114 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1 },
+        "position": {
+          "x": 960,
+          "y": 730
+        },
+        "size": {
+          "x": 710,
+          "y": 114
+        },
+        "imageColor": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0
+        },
         "imageType": 0
       }
     ],
     "popupButton": {
       "name": "Button_GotoFirst",
-      "buttonSize": { "x": 500, "y": 150 },
-      "buttonPosition": { "x": 960, "y": 910 },
+      "buttonSize": {
+        "x": 176,
+        "y": 157
+      },
+      "buttonPosition": {
+        "x": 960,
+        "y": 910
+      },
       "buttonBackgroundImage": {
         "name": "Image_ButtonImage",
-        "imagePath": "Image/Button/1_Button.png",
-        "position": { "x": 0.5, "y": 0.5 },
-        "size": { "x": 10, "y": 10 },
-        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imagePath": "Image/Button/1_GoTitle.png",
+        "position": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "size": {
+          "x": 10,
+          "y": 10
+        },
+        "imageColor": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0,
+          "a": 0.0
+        },
         "imageType": 0
       },
       "buttonAddtionalImage": {},
-      "buttonText": {
-        "name": "Text_Button1",
-        "text": "<b>처음으로</b>",
-        "position": { "x": 0.0, "y": 10.0 },
-        "rotationZ": 0.0,
-        "fontResourceName": "font1",
-        "fontSize": 52,
-        "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
-      },
+      "buttonText": {},
       "buttonSound": "click1"
     }
-  },
-  "gameEndInventoryPosition": { "x": 960, "y": 525 }
+  }
 }

@@ -114,7 +114,7 @@ public class UIManager : MonoBehaviour
                 titleCanvasInstance = Instantiate(titlePrefab); // 필요 시 부모 지정
                 titleCanvasInstance.SetActive(true);
 
-                CreateTitle(); // 타이틀 화면 생성
+                CreateTitle(); // 타이틀 화면 생성               
             }
             else
             {
@@ -152,7 +152,7 @@ public class UIManager : MonoBehaviour
             {
                 // 2. 배경 텍스트 및 버튼 생성
                 CreateTexts(setting.texts, bg);
-                CreateButton(setting.startButton, bg, btn =>
+                CreateButton(setting.startButton, bg, (btn, addImg) =>
                 {
                     // 3. 타이틀 "시작하기" 버튼 클릭 이벤트 연결
                     if (btn != null && btn.TryGetComponent<Button>(out Button button))
@@ -162,6 +162,11 @@ public class UIManager : MonoBehaviour
                             PlayClickSound(soundKey);
                             CreateGameUI();
                         });
+                    }
+
+                    if (addImg != null && addImg.TryGetComponent<Image>(out Image addImage))
+                    {
+                        addImg.AddComponent<ButtonAnim>();
                     }
                 });
             }
@@ -205,7 +210,7 @@ public class UIManager : MonoBehaviour
         CreateInventory(setting.game1Setting.inventorySetting, parent);
 
         // 2. 게임 내 "핀 포인트 버튼" 생성"
-        CreateButton(setting.game1Setting.pinPointButton, parent, pinBtn => {
+        CreateButton(setting.game1Setting.pinPointButton, parent, (pinBtn, addImg) => {
             if (pinBtn != null && pinBtn.TryGetComponent<Button>(out Button button))
             {
                 button.onClick.AddListener(() =>
@@ -226,7 +231,7 @@ public class UIManager : MonoBehaviour
             int index = i;
             string soundKey = setting.game1Setting.photoButtons[i].buttonSound;
 
-            CreateButton(setting.game1Setting.photoButtons[i], parent, btnGO =>
+            CreateButton(setting.game1Setting.photoButtons[i], parent, (btnGO, addImg) =>
             {
                 if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
                 {
@@ -282,7 +287,7 @@ public class UIManager : MonoBehaviour
         }
 
         // "처음으로" 버튼 생성 및 이벤트 연결
-        CreateButton(setting.game1Setting.goTitleButton, parent, goTitleBtn =>
+        CreateButton(setting.game1Setting.goTitleButton, parent, (goTitleBtn, addImg) =>
         {
             if (goTitleBtn != null && goTitleBtn.TryGetComponent<Button>(out Button btn))
             {
@@ -305,6 +310,7 @@ public class UIManager : MonoBehaviour
         // 1. 팝업 백그라운드 이미지 생성
         CreateBackgroundImage(setting.popupBackgroundImage, gameBackgroundInstance.transform, popupBG =>
         {
+            popupBG.AddComponent<EndPopupManager>();
             popupBG.transform.SetAsLastSibling();
 
             // 2. 텍스트 생성
@@ -314,15 +320,27 @@ public class UIManager : MonoBehaviour
             // 3. 이미지 생성
             foreach (var imgSetting in setting.popupImages)
             {
-                CreateImage(imgSetting, popupBG, null);
+                CreateImage(imgSetting, popupBG, createdImage =>
+                {   
+                    if (popupBG.TryGetComponent<EndPopupManager>(out var endPopup))
+                    {
+                        Debug.Log("Add list");
+                        endPopup.popUpElements.Add(createdImage);
+                    }                    
+                });
             }
                 
 
             // 버튼 생성
-            CreateButton(setting.popupButton, popupBG, btnGO =>
-            {
+            CreateButton(setting.popupButton, popupBG, (btnGO, addImg) =>
+            {   
                 if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
                 {
+                    if (popupBG.TryGetComponent<EndPopupManager>(out var endPopup))
+                    {
+                        endPopup.popUpElements.Add(btnGO);
+                    }
+
                     btn.onClick.AddListener(() =>
                     {
                         Destroy(popupBG);
@@ -332,19 +350,18 @@ public class UIManager : MonoBehaviour
                         });
                     });
                 }
+
+                if (popupBG.TryGetComponent<EndPopupManager>(out var manager))
+                {
+                    manager.FadeInAllImages();
+                }
             });
 
             goTitleButton.SetActive(false);
 
             if (inventoryInstance != null)
-            {
-                inventoryInstance.transform.SetParent(popupBG.transform);
-                if (inventoryInstance.TryGetComponent<RectTransform>(out var invRT))
-                {
-                    invRT.pivot = new Vector2(0.5f, 0.5f);
-                    invRT.anchoredPosition = new(JsonLoader.Instance.Settings.gameEndInventoryPosition.x,
-                        -JsonLoader.Instance.Settings.gameEndInventoryPosition.y);
-                }
+            {   
+                inventoryInstance.SetActive(false);
             }
         });
     }
@@ -365,7 +382,7 @@ public class UIManager : MonoBehaviour
                 CreateImage(imgSetting, popupBG, null);
 
             // 버튼 생성
-            CreateButton(setting.popupButton, popupBG, btnGO =>
+            CreateButton(setting.popupButton, popupBG, (btnGO, addImg) =>
             {
                 if (btnGO != null && btnGO.TryGetComponent<Button>(out Button btn))
                 {
@@ -510,11 +527,11 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// 버튼 생성 및 클릭 이벤트 연결
     /// </summary>
-    private void CreateButton(ButtonSetting setting, GameObject parent, Action<GameObject> onComplete = null)
+    private void CreateButton(ButtonSetting setting, GameObject parent, Action<GameObject, GameObject> onComplete = null)
     {
         LoadPrefabAndInstantiate("ButtonPrefab", parent.transform, go =>
         {
-            if (go == null) { onComplete?.Invoke(null); return; }
+            if (go == null) { onComplete?.Invoke(null, null); return; }
             go.name = setting.name;
 
             // 1) 버튼 배경 이미지
@@ -527,20 +544,7 @@ public class UIManager : MonoBehaviour
                 bgImage.type = (Image.Type)setting.buttonBackgroundImage.imageType;
             }
 
-            // 2) 버튼 추가 이미지 (자식 오브젝트로 생성)
-            if (setting.buttonAdditionalImage != null && !string.IsNullOrEmpty(setting.buttonAdditionalImage.imagePath))
-            {
-                CreateImage(setting.buttonAdditionalImage, go, addImgGO =>
-                {
-                    if (addImgGO != null && addImgGO.TryGetComponent<RectTransform>(out RectTransform addRT))
-                    {
-                        addRT.anchoredPosition = new Vector2(setting.buttonAdditionalImage.position.x, -setting.buttonAdditionalImage.position.y);
-                        addRT.sizeDelta = setting.buttonAdditionalImage.size;
-                    }
-                });
-            }
-
-            // 3) 버튼 텍스트
+            // 2) 버튼 텍스트
             var textComp = go.GetComponentInChildren<TextMeshProUGUI>();
             if (textComp != null && setting.buttonText != null && !string.IsNullOrEmpty(setting.buttonText.text))
             {
@@ -553,14 +557,30 @@ public class UIManager : MonoBehaviour
                 }
             }
 
-            // 4) 버튼 크기와 위치
+            // 3) 버튼 크기·위치
             if (go.TryGetComponent<RectTransform>(out RectTransform rt))
             {
                 rt.sizeDelta = setting.buttonSize;
                 rt.anchoredPosition = new Vector2(setting.buttonPosition.x, -setting.buttonPosition.y);
             }
 
-            onComplete?.Invoke(go);
+            // 4) 마지막에 추가 이미지 생성
+            if (setting.buttonAdditionalImage != null && !string.IsNullOrEmpty(setting.buttonAdditionalImage.imagePath))
+            {
+                CreateImage(setting.buttonAdditionalImage, go, addImgGO =>
+                {
+                    if (addImgGO != null && addImgGO.TryGetComponent<RectTransform>(out RectTransform addRT))
+                    {
+                        addRT.anchoredPosition = new Vector2(setting.buttonAdditionalImage.position.x, -setting.buttonAdditionalImage.position.y);
+                        addRT.sizeDelta = setting.buttonAdditionalImage.size;
+                    }
+                    onComplete?.Invoke(go, addImgGO);
+                });
+            }
+            else
+            {
+                onComplete?.Invoke(go, null);
+            }
         });
     }
     #endregion

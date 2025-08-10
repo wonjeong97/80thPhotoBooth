@@ -209,6 +209,5 @@ public class Settings
     public PopupSetting[] explainPopupSetting;
     public PopupSetting pinPointPopupSetting;
     public PopupSetting gameEndPopupSetting;
-    public Vector2 gameEndInventoryPosition;
 }
 #endregion
