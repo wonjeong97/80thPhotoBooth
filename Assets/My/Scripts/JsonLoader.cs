@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using TMPro;
 using UnityEngine;
 
 public class JsonLoader : MonoBehaviour
@@ -76,6 +77,7 @@ public class ImageSetting
     public string name;
     public string imagePath;
     public Vector2 position;
+    public float rotation;
     public Vector2 size;
     public Color imageColor;
     public UIImageType imageType;
@@ -90,6 +92,7 @@ public class TextSetting
     public string fontResourceName;
     public int fontSize;
     public Color fontColor;
+    public TextAlignmentOptions textAlignment = TextAlignmentOptions.Center;
 }
 
 [Serializable]
@@ -201,6 +204,10 @@ public class Settings
 {
     public float inactivityTime; // 입력이 없을 시 타이틀로 되돌아가는 시간
     public float fadeTime; // 페이드 시간
+    public float buttonRotationSpeed;
+    public float rotationMin;
+    public float rotationMax;
+    public float endPopupFadeTime;
     public FontMapping fontMap;
     public SoundSetting[] sounds;
     public CloseSetting closeSetting;

@@ -159,7 +159,7 @@ public class UIManager : MonoBehaviour
                     {
                         button.onClick.AddListener(() =>
                         {
-                            PlayClickSound(soundKey);
+                            //PlayClickSound(soundKey);
                             CreateGameUI();
                         });
                     }
@@ -167,6 +167,12 @@ public class UIManager : MonoBehaviour
                     if (addImg != null && addImg.TryGetComponent<Image>(out Image addImage))
                     {
                         addImg.AddComponent<ButtonAnim>();
+                        if (addImg.TryGetComponent<ButtonAnim>(out var anim))
+                        {
+                            anim.RotationSpeed = JsonLoader.Instance.Settings.buttonRotationSpeed;
+                            anim.MinZ = JsonLoader.Instance.Settings.rotationMin;
+                            anim.MaxZ = JsonLoader.Instance.Settings.rotationMax;
+                        }
                     }
                 });
             }
@@ -215,11 +221,11 @@ public class UIManager : MonoBehaviour
             {
                 button.onClick.AddListener(() =>
                 {
-                    Debug.Log("Pin btn clicked1");
                     CreatePopup(setting.pinPointPopupSetting, gameBackgroundInstance.transform, pinPointPopup =>
                     {
-                        Debug.Log("Pin btn clicked2");
+                        // TODO: Pin Popup Setting
                     });
+                    Destroy(pinBtn);
                 });
             }    
 
@@ -259,7 +265,7 @@ public class UIManager : MonoBehaviour
                         // 변경방식: 왼쪽부터 빈칸 채우기                        
                         if (itemFoundCount < itemIcons.Count)
                         {
-                            PlayClickSound(soundKey);
+                            //PlayClickSound(soundKey);
 
                             // 현재 버튼에 있는 카메라 이미지를 가져와서 인벤토리 칸에 적용
                             if (btn.TryGetComponent<Image>(out Image btnImage) &&
@@ -324,12 +330,10 @@ public class UIManager : MonoBehaviour
                 {   
                     if (popupBG.TryGetComponent<EndPopupManager>(out var endPopup))
                     {
-                        Debug.Log("Add list");
                         endPopup.popUpElements.Add(createdImage);
                     }                    
                 });
-            }
-                
+            }                
 
             // 버튼 생성
             CreateButton(setting.popupButton, popupBG, (btnGO, addImg) =>
@@ -353,7 +357,7 @@ public class UIManager : MonoBehaviour
 
                 if (popupBG.TryGetComponent<EndPopupManager>(out var manager))
                 {
-                    manager.FadeInAllImages();
+                    manager.FadeInAllImages(JsonLoader.Instance.Settings.endPopupFadeTime);
                 }
             });
 
@@ -485,6 +489,7 @@ public class UIManager : MonoBehaviour
             if (go.TryGetComponent<RectTransform>(out RectTransform rt))
             {
                 rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
+                rt.localRotation = Quaternion.Euler(0, 0, setting.rotation);
                 rt.sizeDelta = setting.size;
             }
 
@@ -509,12 +514,12 @@ public class UIManager : MonoBehaviour
                     go.name = setting.name;
                     if (go.TryGetComponent<TextMeshProUGUI>(out TextMeshProUGUI uiText))
                     {
-                        LoadFontAndApply(uiText, setting.fontResourceName, setting.text, setting.fontSize, setting.fontColor);
+                        LoadFontAndApply(uiText, setting.fontResourceName, setting.text, setting.fontSize, setting.fontColor, setting.textAlignment);
                     }
                     if (go.TryGetComponent<RectTransform>(out RectTransform rt))
                     {
                         rt.anchoredPosition = new Vector2(setting.position.x, -setting.position.y);
-                        rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);
+                        rt.localRotation = Quaternion.Euler(0, 0, setting.rotationZ);                        
                     }
                 }
 
@@ -677,7 +682,8 @@ public class UIManager : MonoBehaviour
     /// <summary>
     /// Addressable로 폰트를 로드 후 텍스트 설정
     /// </summary>
-    private void LoadFontAndApply(TextMeshProUGUI uiText, string fontKey, string textValue, int fontSize, Color fontColor, Action onComplete = null)
+    private void LoadFontAndApply(TextMeshProUGUI uiText, string fontKey, string textValue, int fontSize,
+        Color fontColor, TextAlignmentOptions alignment  = TextAlignmentOptions.Center , Action onComplete = null)
     {
         if (uiText == null || string.IsNullOrEmpty(fontKey))
             return;
@@ -693,8 +699,9 @@ public class UIManager : MonoBehaviour
                 uiText.font = handle.Result;
                 uiText.fontSize = fontSize;
                 uiText.color = fontColor;
-                uiText.alignment = TextAlignmentOptions.Center;
+                uiText.alignment = alignment;
                 uiText.text = textValue;
+                
                 uiText.enabled = true;
 
                 onComplete?.Invoke();

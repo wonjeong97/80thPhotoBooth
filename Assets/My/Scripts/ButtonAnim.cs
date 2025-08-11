@@ -6,6 +6,22 @@ public class ButtonAnim : MonoBehaviour
     [SerializeField] private float minZ = -30f;        // 최소 Z 회전값
     [SerializeField] private float maxZ = 0f;          // 최대 Z 회전값
 
+    public float RotationSpeed
+    {    
+        set { rotationSpeed = value; }
+    }
+
+    public float MinZ
+    {
+        set {  minZ = value; }
+    }
+
+    public float MaxZ
+    {
+        set { maxZ = value; }
+    }
+
+
     private void Update()
     {
         // PingPong으로 0~1 값을 왕복
