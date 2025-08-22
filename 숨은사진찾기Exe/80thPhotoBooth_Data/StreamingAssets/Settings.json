@@ -1,0 +1,665 @@
+{
+  "inactivityTime": 9990.0,
+  "fadeTime": 1.0,
+  "buttonRotationSpeed": 1,
+  "rotationMin": -30,
+  "rotationMax": 0,
+  "endPopupFadeTime": 1,
+  "fontMap": {
+    "font1": "DungGeunMo SDF",
+    "font2": "NanumGothic-Regular SDF"
+  },
+  "sounds": [
+    { "key": "click1", "clipPath": "click1.wav", "volume": 1.0 },
+    { "key": "click2", "clipPath": "click2.wav", "volume": 0.5 }
+  ],
+  "closeSetting": {
+    "position": { "x": 1, "y": 1 },
+    "numToClose": 10,
+    "resetClickTime": 60,
+    "imageAlpha": 0.1
+  },
+  "titleSetting": {
+    "backgroundImage": {
+      "name": "Image_TitleBackground",
+      "imagePath": "Image/Background/1_Background.png",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 1920, "y": 1080 },
+      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+      "imageType": 0
+    },
+    "texts": [],
+    "startButton": {
+      "name": "Button_Start",
+      "buttonSize": { "x": 550, "y": 150 },
+      "buttonPosition": { "x": 960, "y": 900 },
+      "buttonBackgroundImage": {
+        "imagePath": "Image/Button/1_Button.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 10, "y": 10 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAdditionalImage": {
+        "name": "Image_cursor",
+        "imagePath": "Image/Button/1_Cursor.png",
+        "position": { "x": 550, "y": 150 },
+        "size": { "x": 150, "y": 150 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonText": {
+        "text": "<b>시작하기</b>",
+        "position": { "x": 0, "y": 10 },
+        "rotationZ": 0.0,
+        "fontResourceName": "font1",
+        "fontSize": 52,
+        "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
+      },
+      "buttonSound": "click1"
+    }
+  },
+  "game1Setting": {
+    "game1BackgroundImage": {
+      "name": "Image_Game1Background",
+      "imagePath": "Image/Background/2_Background.png",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 1920, "y": 1080 },
+      "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+      "imageType": 0
+    },
+    "popupSetting": {
+      "name": "Popup_1",
+      "popupBackgroundImage": {
+        "name": "Image_Popup1_Background",
+        "imagePath": "Image/Overlap/1_Overlap.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "popupTexts": [],
+      "popupImages": [
+        {
+          "name": "Image_HowToPlay",
+          "imagePath": "Image/Text/1_HowToPlay.png",
+          "position": { "x": 960, "y": 190 },
+          "size": { "x": 550, "y": 130 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Popup",
+          "imagePath": "Image/Text/2_Popup.png",
+          "position": { "x": 960, "y": 520 },
+          "size": { "x": 1000, "y": 520 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Camera",
+          "imagePath": "Image/Camera/3_Camera.png",
+          "position": { "x": 960, "y": 425 },
+          "size": { "x": 300, "y": 200 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_text1",
+          "imagePath": "Image/Text/Text_HowToPlay.png",
+          "position": { "x": 960, "y": 635 },
+          "size": { "x": 850, "y": 150 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1 },
+          "imageType": 0
+        }
+      ],
+      "popupButton": {
+        "name": "Button_Popup1",
+        "buttonSize": { "x": 550, "y": 150 },
+        "buttonPosition": { "x": 960, "y": 900 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Button/1_Button.png",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAdditionalImage": {},
+        "buttonText": {
+          "name": "Text_Button1",
+          "text": "<b>출발!</b>",
+          "position": { "x": 0, "y": 10 },
+          "rotationZ": 0.0,
+          "fontResourceName": "font1",
+          "fontSize": 52,
+          "fontColor": { "r": 0.0, "g": 0.0, "b": 0.0, "a": 1.0 }
+        },
+        "buttonSound": "click1"
+      }
+    },
+    "inventorySetting": {
+      "name": "Inventory",
+      "inventoryBackgroundImage": {
+        "name": "Image_InventoryBackground",
+        "imagePath": "Image/Inventory/1_Inventory.png",
+        "position": { "x": 345, "y": 120 },
+        "size": { "x": 600, "y": 150 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "itemImages": [
+        {
+          "name": "1_Icon",
+          "imagePath": "Image/Item/1_Icon.png",
+          "position": { "x": 80, "y": 70 },
+          "size": { "x": 80, "y": 80 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "2_Icon",
+          "imagePath": "Image/Item/2_Icon.png",
+          "position": { "x": 230, "y": 70 },
+          "size": { "x": 80, "y": 80 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "3_Icon",
+          "imagePath": "Image/Item/3_Icon.png",
+          "position": { "x": 377.5, "y": 70 },
+          "size": { "x": 80, "y": 80 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "4_Icon",
+          "imagePath": "Image/Item/4_Icon.png",
+          "position": { "x": 527.5, "y": 70 },
+          "size": { "x": 80, "y": 80 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        }
+      ]
+    },
+    "photoButtons": [
+      {
+        "name": "Button_Game0",
+        "buttonSize": { "x": 191, "y": 160 },
+        "buttonPosition": { "x": 1055, "y": 397 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Camera/3_Camera.png",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      },
+      {
+        "name": "Button_Game1",
+        "buttonSize": { "x": 191, "y": 160 },
+        "buttonPosition": { "x": 211, "y": 829 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Camera/3_Camera.png",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      },
+      {
+        "name": "Button_Game2",
+        "buttonSize": { "x": 191, "y": 160 },
+        "buttonPosition": { "x": 961, "y": 880 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Camera/3_Camera.png",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      },
+      {
+        "name": "Button_Game3",
+        "buttonSize": { "x": 191, "y": 160 },
+        "buttonPosition": { "x": 1658, "y": 822 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Camera/3_Camera.png",
+          "position": { "x": 0.5, "y": 0.5 },
+          "size": { "x": 10, "y": 10 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      }
+    ],
+    "pinPointButton": {
+      "name": "Button_PinPoint",
+      "buttonSize": { "x": 100, "y": 150 },
+      "buttonPosition": { "x": 1310, "y": 270 },
+      "buttonBackgroundImage": {
+        "name": "Image_ButtonImage",
+        "imagePath": "Image/Item/1_Location.png",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 10, "y": 10 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {},
+      "buttonText": {},
+      "buttonSound": "click1"
+    },
+    "goTitleButton": {
+      "name": "Button_GotoTitle",
+      "buttonSize": { "x": 176, "y": 157 },
+      "buttonPosition": { "x": 1800, "y": 975 },
+      "buttonBackgroundImage": {
+        "name": "Image_ButtonImage",
+        "imagePath": "Image/Button/1_GoTitle.png",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 10, "y": 10 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {},
+      "buttonText": {},
+      "buttonSound": "click1"
+    }
+  },
+  "explainPopupSetting": [
+    {
+      "name": "PopUp_Explain0",
+      "popupBackgroundImage": {
+        "name": "Image_ExplainPopupBG",
+        "imagePath": "Image/Background/popup_bg.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "popupTexts": [],
+      "popupImages": [
+        {
+          "name": "Image_PopupBlack",
+          "imagePath": "Image/Background/popup_black.png",
+          "position": { "x": 960, "y": 600 },
+          "size": { "x": 1500, "y": 850 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex0Text1",
+          "imagePath": "Image/Text/Ex0-1.png",
+          "position": { "x": 960, "y": 290 },
+          "size": { "x": 677, "y": 56 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex0Text2",
+          "imagePath": "Image/Text/Ex0-2.png",
+          "position": { "x": 960, "y": 412 },
+          "size": { "x": 706, "y": 104 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_0-1",
+          "imagePath": "Image/Photo/0-1.png",
+          "position": { "x": 960, "y": 727 },
+          "size": { "x": 1180, "y": 480 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        }
+      ],
+      "popupButton": {
+        "name": "Button_CloseExplain",
+        "buttonSize": { "x": 100, "y": 100 },
+        "buttonPosition": { "x": 1580, "y": 290 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Button/Button_x.png",
+          "position": { "x": 0, "y": 0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      }
+    },
+    {
+      "name": "PopUp_Explain1",
+      "popupBackgroundImage": {
+        "name": "Image_ExplainPopupBG",
+        "imagePath": "Image/Background/popup_bg.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "popupTexts": [],
+      "popupImages": [
+        {
+          "name": "Image_PopupBlack",
+          "imagePath": "Image/Background/popup_black.png",
+          "position": { "x": 960, "y": 600 },
+          "size": { "x": 1500, "y": 850 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex1Text1",
+          "imagePath": "Image/Text/Ex1-1.png",
+          "position": { "x": 960, "y": 290 },
+          "size": { "x": 863, "y": 147 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex1Text2",
+          "imagePath": "Image/Text/Ex1-2.png",
+          "position": { "x": 960, "y": 430 },
+          "size": { "x": 534, "y": 64 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex1",
+          "imagePath": "Image/Photo/1-1.png",
+          "position": { "x": 960, "y": 695 },
+          "size": { "x": 1341, "y": 545 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        }
+      ],
+      "popupButton": {
+        "name": "Button_CloseExplain",
+        "buttonSize": { "x": 100, "y": 100 },
+        "buttonPosition": { "x": 1580, "y": 290 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Button/Button_x.png",
+          "position": { "x": 0, "y": 0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      }
+    },
+    {
+      "name": "PopUp_Explain2",
+      "popupBackgroundImage": {
+        "name": "Image_ExplainPopupBG",
+        "imagePath": "Image/Background/popup_bg.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "popupTexts": [],
+      "popupImages": [
+        {
+          "name": "Image_PopupBlack",
+          "imagePath": "Image/Background/popup_black.png",
+          "position": { "x": 960, "y": 600 },
+          "size": { "x": 1500, "y": 850 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex2Text1",
+          "imagePath": "Image/Text/Ex2-1.png",
+          "position": { "x": 1220, "y": 360 },
+          "size": { "x": 612, "y": 136 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex2Text2",
+          "imagePath": "Image/Text/Ex2-2.png",
+          "position": { "x": 1220, "y": 635 },
+          "size": { "x": 406, "y": 297 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex2",
+          "imagePath": "Image/Photo/2-1.png",
+          "position": { "x": 650, "y": 610 },
+          "size": { "x": 466, "y": 654 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        }
+      ],
+      "popupButton": {
+        "name": "Button_CloseExplain",
+        "buttonSize": { "x": 100, "y": 100 },
+        "buttonPosition": { "x": 1580, "y": 290 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Button/Button_x.png",
+          "position": { "x": 0, "y": 0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      }
+    },
+    {
+      "name": "PopUp_Explain3",
+      "popupBackgroundImage": {
+        "name": "Image_ExplainPopupBG",
+        "imagePath": "Image/Background/popup_bg.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 1920, "y": 1080 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      "popupTexts": [],
+      "popupImages": [
+        {
+          "name": "Image_PopupBlack",
+          "imagePath": "Image/Background/popup_black.png",
+          "position": { "x": 960, "y": 600 },
+          "size": { "x": 1500, "y": 850 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex3Text1",
+          "imagePath": "Image/Text/Ex3-1.png",
+          "position": { "x": 960, "y": 300 },
+          "size": { "x": 860, "y": 58 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex3Text2",
+          "imagePath": "Image/Text/Ex3-2.png",
+          "position": { "x": 960, "y": 435 },
+          "size": { "x": 469, "y": 144 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        },
+        {
+          "name": "Image_Ex3",
+          "imagePath": "Image/Photo/3-1.png",
+          "position": { "x": 960, "y": 760 },
+          "size": { "x": 879, "y": 419 },
+          "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+          "imageType": 0
+        }
+      ],
+      "popupButton": {
+        "name": "Button_CloseExplain",
+        "buttonSize": { "x": 100, "y": 100 },
+        "buttonPosition": { "x": 1580, "y": 290 },
+        "buttonBackgroundImage": {
+          "name": "Image_ButtonImage",
+          "imagePath": "Image/Button/Button_x.png",
+          "position": { "x": 0, "y": 0 },
+          "size": { "x": 0, "y": 0 },
+          "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1.0 },
+          "imageType": 0
+        },
+        "buttonAddtionalImage": {},
+        "buttonText": {},
+        "buttonSound": "click1"
+      }
+    }
+  ],
+  "pinPointPopupSetting": {
+    "name": "PopUp_PinPoint",
+    "popupBackgroundImage": {
+      "name": "Image_ExplainPopupBG",
+      "imagePath": "Image/Background/popup_bg.png",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 1920, "y": 1080 },
+      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+      "imageType": 0
+    },
+    "popupTexts": [],
+    "popupImages": [
+      {
+        "name": "Image_PopupBlack",
+        "imagePath": "Image/Background/popup_black.png",
+        "position": { "x": 960, "y": 600 },
+        "size": { "x": 1500, "y": 850 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_Pin1ext1",
+        "imagePath": "Image/Text/Pin1-1.png",
+        "position": { "x": 960, "y": 310 },
+        "size": { "x": 642, "y": 127 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_PinText2",
+        "imagePath": "Image/Text/Pin1-2.png",
+        "position": { "x": 960, "y": 430 },
+        "size": { "x": 529, "y": 64 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_Pin",
+        "imagePath": "Image/Photo/Pin1.png",
+        "position": { "x": 960, "y": 680 },
+        "size": { "x": 989, "y": 590 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+        "imageType": 0
+      }
+    ],
+    "popupButton": {
+      "name": "Button_CloseExplain",
+      "buttonSize": { "x": 100, "y": 100 },
+      "buttonPosition": { "x": 1580, "y": 290 },
+      "buttonBackgroundImage": {
+        "name": "Image_ButtonImage",
+        "imagePath": "Image/Button/Button_x.png",
+        "position": { "x": 0, "y": 0 },
+        "size": { "x": 0, "y": 0 },
+        "imageColor": { "r": 1, "g": 1, "b": 1, "a": 1.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {},
+      "buttonText": {},
+      "buttonSound": "click1"
+    }
+  },
+  "gameEndPopupSetting": {
+    "name": "PopUp_GameEnd",
+    "popupBackgroundImage": {
+      "name": "Image_PopUpEndBackground",
+      "imagePath": "Image/Background/1_Overlap.png",
+      "position": { "x": 0, "y": 0 },
+      "size": { "x": 1920, "y": 1080 },
+      "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 },
+      "imageType": 0
+    },
+    "popupTexts": [],
+    "popupImages": [
+      {
+        "name": "Image_1_text",
+        "imagePath": "Image/Text/1_Text.png",
+        "position": { "x": 960, "y": 180 },
+        "size": { "x": 741, "y": 145 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_2_text",
+        "imagePath": "Image/Text/2_Text.png",
+        "position": { "x": 960, "y": 330 },
+        "size": {
+          "x": 711,
+          "y": 53
+        },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_InventoryFull",
+        "imagePath": "Image/Inventory/3_InventoryFull.png",
+        "position": { "x": 960, "y": 525 },
+        "size": {
+          "x": 600,
+          "y": 150
+        },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0 },
+        "imageType": 0
+      },
+      {
+        "name": "Image_3_text",
+        "imagePath": "Image/Text/3_Text.png",
+        "position": { "x": 960, "y": 730 },
+        "size": { "x": 710, "y": 114 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0 },
+        "imageType": 0
+      }
+    ],
+    "popupButton": {
+      "name": "Button_GotoFirst",
+      "buttonSize": { "x": 176, "y": 157 },
+      "buttonPosition": { "x": 960, "y": 910 },
+      "buttonBackgroundImage": {
+        "name": "Image_ButtonImage",
+        "imagePath": "Image/Button/1_GoTitle.png",
+        "position": { "x": 0.5, "y": 0.5 },
+        "size": { "x": 10, "y": 10 },
+        "imageColor": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 0.0 },
+        "imageType": 0
+      },
+      "buttonAddtionalImage": {},
+      "buttonText": {},
+      "buttonSound": "click1"
+    }
+  }
+}
